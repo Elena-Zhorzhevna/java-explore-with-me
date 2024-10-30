@@ -1,9 +1,11 @@
 package ewm.stats.mapper;
+
 import ewm.ParamHitDto;
 import ewm.stats.model.ParamHit;
 
-
-
+/**
+ * Класс для преобразования объектов типа ParamHit в тип ParamHitDto и обратно.
+ */
 public class ParamHitMapper {
 
     public static ParamHitDto toDto(ParamHit paramHit) {

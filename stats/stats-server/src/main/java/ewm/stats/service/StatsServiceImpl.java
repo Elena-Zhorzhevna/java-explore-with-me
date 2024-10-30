@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 
+
 @Slf4j
 @Service
 @Transactional(readOnly = true)
@@ -30,6 +31,9 @@ public class StatsServiceImpl implements StatsService {
         this.repository = repository;
     }
 
+    /**
+     * Сохранение информации о том, что на uri конкретного сервиса был отправлен запрос пользователем.
+     */
     @Override
     @Transactional
     public void create(ParamHitDto paramHitDto) {
@@ -38,6 +42,14 @@ public class StatsServiceImpl implements StatsService {
         log.info("Просмотр сохранен.");
     }
 
+    /**
+     * Получение статистики по посещениям.
+     *
+     * @param start  Дата и время начала диапазона за который нужно выгрузить статистику.
+     * @param end    Дата и время конца диапазона за который нужно выгрузить статистику.
+     * @param uris   Список uri для которых нужно выгрузить статистику.
+     * @param unique Список uri для которых нужно выгрузить статистику.
+     */
     @Override
     public List<StatDto> getStats(String start, String end, List<String> uris, boolean unique) {
         Objects.requireNonNull(start, "Время начала сбора данных статистики должно быть указано.");
@@ -49,47 +61,26 @@ public class StatsServiceImpl implements StatsService {
         if (uris == null || uris.isEmpty()) {
             if (unique) {
                 return repository.getUniqueHits(startTime, endTime);
-                //log.info("Получена статистика уникальных просмотров.");
+
             } else {
                 return repository.getHits(startTime, endTime);
-                //log.info("Получена статистика просмотров.");
+
             }
 
         } else {
             if (unique) {
                 return repository.getUniqueHitsByUris(startTime, endTime, uris);
-                //log.info("Получена статистика уникальных просмотров для заданных uri");
+
             } else {
                 return repository.getHitsByUris(startTime, endTime, uris);
-                //log.info("Получена статистика просмотров для заданных uri");
             }
         }
     }
 
+    /**
+     * Метод для декодирования строки времени из URL-кодировки.
+     */
     private LocalDateTime decodeTime(String time) {
         return LocalDateTime.parse(URLDecoder.decode(time, StandardCharsets.UTF_8), DATE_TIME_FORMATTER);
     }
-
 }
-
-/*
-    @Override
-    public List<ViewStats> getViewStats(final LocalDateTime start, final LocalDateTime end, final List<String> uris,
-            final boolean unique) {
-        Objects.requireNonNull(start, "Date and time to gather stats from cannot be null");
-        Objects.requireNonNull(end, "Date and time to gather stats to cannot be null");
-        if (CollectionUtils.isEmpty(uris)) {
-            if (unique) {
-                return repository.getUniqueHits(start, end);
-            } else {
-                return repository.getHits(start, end);
-            }
-        } else {
-            if (unique) {
-                return repository.getUniqueHits(start, end, uris);
-            } else {
-                return repository.getHits(start, end, uris);
-            }
-        }
-    }
- */

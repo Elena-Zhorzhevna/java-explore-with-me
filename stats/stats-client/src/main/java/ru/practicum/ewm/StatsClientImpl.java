@@ -14,6 +14,9 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * HTTP-клиент для работы с сервисом статистики.
+ */
 @Service
 @Slf4j
 public class StatsClientImpl implements StatsClient {
@@ -25,6 +28,9 @@ public class StatsClientImpl implements StatsClient {
                 .build();
     }
 
+    /**
+     * Метод для отправки ParamHit на сервер статистики.
+     */
     @Override
     public void hit(ParamHitDto paramHitDto) {
         log.debug("Отправка POST-запроса на сервер статистики с hit = {}", paramHitDto);
@@ -37,6 +43,9 @@ public class StatsClientImpl implements StatsClient {
                 .toBodilessEntity();
     }
 
+    /**
+     * Метод для получения статистики с сервера.
+     */
     @Override
     public List<StatDto> getStats(String start, String end, List<String> uris, boolean unique) {
         log.debug("Отправка GET-запроса на сервер статистики для uris = {}", uris);
@@ -59,6 +68,9 @@ public class StatsClientImpl implements StatsClient {
         }
     }
 
+    /**
+     * Метод для кодирования времени в формате, подходящем для URL
+     */
     private String codeTime(String time) {
         return URLEncoder.encode(time, StandardCharsets.UTF_8);
     }

@@ -6,10 +6,12 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+/**
+ * Класс представляет обект ParamHit в формате ДТО.
+ */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class ParamHitDto {
 
     @NotBlank
