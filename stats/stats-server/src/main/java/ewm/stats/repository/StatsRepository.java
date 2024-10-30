@@ -64,7 +64,6 @@ public interface StatsRepository extends JpaRepository<ParamHit, Long> {
     List<ParamHitDto> calculateUniqueHits(@Param("uris") Collection<String> uris,
                                      @Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
-
 }*/
 
 

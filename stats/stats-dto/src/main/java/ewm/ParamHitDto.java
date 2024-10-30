@@ -2,6 +2,7 @@ package ewm;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -13,8 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ParamHitDto {
-/*    @NonNull
-    private Long id;*/
+
     @NotBlank
     @Size(max = 64)
     private String app;
@@ -24,7 +24,7 @@ public class ParamHitDto {
     @NotBlank
     @Size(max = 32)
     private String ip;
-    @NotBlank
+    @NotNull
     @FutureOrPresent
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;

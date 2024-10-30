@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,13 +15,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+
 @Slf4j
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping
 public class StatsController {
 
-    private final static DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    @Value("yyyy-MM-dd HH:mm:ss")
+    private String dateTimeFormat;
     private final StatsServiceImpl statsService;
 
     @Autowired
@@ -31,7 +33,8 @@ public class StatsController {
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public void hit(@RequestBody @Valid ParamHit paramHit, HttpServletRequest request) {
-        log.info("Запрос к эндпоинту '{}' на добавление статистики {}", request.getRequestURI(), paramHit);
+        log.info("Запрос к эндпоинту '{}' на добавление статистики {}",
+                request.getRequestURI(), paramHit);
         statsService.create(paramHit);
     }
 
@@ -45,7 +48,7 @@ public class StatsController {
             HttpServletRequest request) {
 
         log.info("Запрос на получение статистики к эндпоинту '{}'", request.getRequestURI());
-        return statsService.getStats(LocalDateTime.parse(start, DATE_TIME_FORMATTER),
-                LocalDateTime.parse(end, DATE_TIME_FORMATTER), uris, unique);
+        return statsService.getStats(LocalDateTime.parse(start, DateTimeFormatter.ofPattern(dateTimeFormat)),
+                LocalDateTime.parse(end, DateTimeFormatter.ofPattern(dateTimeFormat)), uris, unique);
     }
 }
