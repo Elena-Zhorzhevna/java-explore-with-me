@@ -1,14 +1,15 @@
 package ewm.stats.service;
 
+import ewm.ParamHitDto;
 import ewm.StatDto;
-import ewm.stats.model.ParamHit;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface StatsService {
-    void create(ParamHit paramHit);
+    void create(ParamHitDto paramHitDto);
 
-    List<StatDto> getStats(LocalDateTime start, LocalDateTime end, List<String> uris, boolean unique);
+    List<StatDto> getStats(String start, String end, List<String> uris, boolean unique);
 
 }

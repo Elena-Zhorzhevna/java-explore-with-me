@@ -16,37 +16,88 @@ public interface StatsRepository extends JpaRepository<ParamHit, Long> {
     /**
      * Получить общее количество хитов для всех URI в заданном диапазоне времени.
      */
-    @Query("select h.app as app, h.uri as uri, count(h.ip) as hits from ParamHit h "
-            + "where h.timestamp between :start and :end group by h.app, h.uri "
-            + "order by count(h.ip) desc")
+    @Query(value = """
+            select new ewm.StatDto(h.app, h.uri, count(h.ip))
+            from ParamHit as h
+            where h.timestamp between :start and :end
+            group by h.app, h.uri
+            order by count(h.ip) desc
+            """)
     List<StatDto> getHits(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     /**
      * Получить количество хитов для заданных URI в заданном диапазоне времени.
      */
-    @Query("select h.app as app, h.uri as uri, count(h.ip) as hits from ParamHit h "
-            + "where h.uri in (:uris) and h.timestamp between :start and :end group by h.app, h.uri "
-            + "order by count(h.ip) desc")
+    @Query(value = """
+            select new ewm.StatDto(h.app, h.uri, count(h.ip))
+            from ParamHit as h
+            where h.uri in :uris and h.timestamp between :start and :end
+            group by h.app, h.uri
+            order by count(h.ip) desc""")
     List<StatDto> getHitsByUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                 @Param("uris") List<String> uris);
 
     /**
      * Получить общее количество уникальных хитов для всех URI в заданном диапазоне времени.
      */
-    @Query("select h.app as app, h.uri as uri, count(distinct(h.ip)) as hits from ParamHit h "
-            + "where h.timestamp between :start and :end group by h.app, h.uri "
-            + "order by count(distinct(h.ip)) desc")
+    @Query(value = """
+            select new ewm.StatDto(h.app, h.uri, count(distinct(h.ip)))
+            from ParamHit as h
+            where h.timestamp between :start and :end
+            group by h.app, h.uri
+            order by count(distinct(h.ip)) desc
+            """)
     List<StatDto> getUniqueHits(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     /**
      * Получить количество уникальных хитов для заданных URI в заданном диапазоне времени.
      */
+    @Query(value = """
+            select new ewm.StatDto(h.app, h.uri, count(distinct(h.ip)))
+            from ParamHit as h
+            where h.uri in :uris and h.timestamp between :start and :end
+            group by h.app, h.uri
+            order by count(distinct(h.ip)) desc""")
+    List<StatDto> getUniqueHitsByUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
+                                      @Param("uris") List<String> uris);
+}
+
+
+
+
+/*
+
+@Query("select h.app as app, h.uri as uri, count(h.ip) as hits from ParamHit h "
+        + "where h.uri in (:uris) and h.timestamp between :start and :end group by h.app, h.uri "
+        + "order by count(h.ip) desc")
+List<StatDto> getHitsByUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
+                            @Param("uris") List<String> uris);
+
+
     @Query("select h.app as app, h.uri as uri, count(distinct(h.ip)) as hits from ParamHit h "
+            + "where h.timestamp between :start and :end group by h.app, h.uri "
+            + "order by count(distinct(h.ip)) desc")
+    List<StatDto> getUniqueHits(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+
+        @Query("select h.app as app, h.uri as uri, count(distinct(h.ip)) as hits from ParamHit h "
             + "where h.uri in (:uris) and h.timestamp between :start and :end group by h.app, h.uri "
             + "order by count(distinct(h.ip)) desc")
     List<StatDto> getUniqueHitsByUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
                                       @Param("uris") List<String> uris);
-}
+ */
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

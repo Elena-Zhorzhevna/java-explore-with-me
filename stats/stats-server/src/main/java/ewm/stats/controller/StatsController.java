@@ -1,19 +1,21 @@
 package ewm.stats.controller;
 
+import ewm.ParamHitDto;
 import ewm.StatDto;
-import ewm.stats.model.ParamHit;
+
 import ewm.stats.service.StatsServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+
 
 
 @Slf4j
@@ -21,8 +23,8 @@ import java.util.List;
 @RequestMapping
 public class StatsController {
 
-    @Value("yyyy-MM-dd HH:mm:ss")
-    private String dateTimeFormat;
+    /*    @Value("yyyy-MM-dd HH:mm:ss")
+        private String dateTimeFormat;*/
     private final StatsServiceImpl statsService;
 
     @Autowired
@@ -32,23 +34,25 @@ public class StatsController {
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void hit(@RequestBody @Valid ParamHit paramHit, HttpServletRequest request) {
+    public void hit(@RequestBody @Valid ParamHitDto paramHitDto, HttpServletRequest request) {
         log.info("Запрос к эндпоинту '{}' на добавление статистики {}",
-                request.getRequestURI(), paramHit);
-        statsService.create(paramHit);
+                request.getRequestURI(), paramHitDto);
+        statsService.create(paramHitDto);
     }
 
     @GetMapping("/stats")
     @ResponseStatus(HttpStatus.OK)
     public List<StatDto> stats(
-            @RequestParam String start,
-            @RequestParam String end,
-            @RequestParam List<String> uris,
+            @RequestParam
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String start,
+            @RequestParam
+            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String end,
+            @RequestParam(defaultValue = "false") List<String> uris,
             @RequestParam(defaultValue = "false") Boolean unique,
             HttpServletRequest request) {
 
         log.info("Запрос на получение статистики к эндпоинту '{}'", request.getRequestURI());
-        return statsService.getStats(LocalDateTime.parse(start, DateTimeFormatter.ofPattern(dateTimeFormat)),
-                LocalDateTime.parse(end, DateTimeFormatter.ofPattern(dateTimeFormat)), uris, unique);
+
+        return statsService.getStats(start, end, uris, unique);
     }
 }
