@@ -2,9 +2,9 @@ package ru.practicum.ewm.main.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
+import ru.practicum.ewm.main.dto.location.LocationDto;
 import ru.practicum.ewm.main.dto.user.UserShortDto;
 import ru.practicum.ewm.main.dto.category.CategoryDto;
-import ru.practicum.ewm.main.model.Location;
 import ru.practicum.ewm.main.model.enums.State;
 
 import java.time.LocalDateTime;
@@ -61,7 +61,7 @@ public class EventFullDto {
     /**
      * Широта и долгота места проведения событий.
      */
-    private Location location;
+    private LocationDto location;
 
     /**
      * Нужно ли оплачивать участие.
