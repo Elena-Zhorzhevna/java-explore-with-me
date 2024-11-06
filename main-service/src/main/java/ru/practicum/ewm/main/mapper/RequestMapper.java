@@ -13,7 +13,7 @@ import static ru.practicum.ewm.main.model.enums.Status.CONFIRMED;
 import static ru.practicum.ewm.main.model.enums.Status.PENDING;
 
 public class RequestMapper {
-    public static ParticipationRequest toRequest(Event event, User requester) {
+    public static ParticipationRequest mapToRequest(Event event, User requester) {
         return ParticipationRequest.builder()
                 .requester(requester)
                 .event(event)

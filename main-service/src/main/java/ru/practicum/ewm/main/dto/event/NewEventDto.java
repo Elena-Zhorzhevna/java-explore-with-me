@@ -21,7 +21,7 @@ public class NewEventDto {
     /**
      * Категория, к которой относится событие.
      */
-    @JsonProperty("id")
+    //@JsonProperty("id")
     private Long category;
 
     /**

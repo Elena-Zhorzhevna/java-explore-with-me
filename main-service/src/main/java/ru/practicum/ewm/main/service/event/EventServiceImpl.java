@@ -299,7 +299,7 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequestDto> confirmedRequests = new ArrayList<>();
         List<ParticipationRequestDto> rejectedRequests = new ArrayList<>();
 
-        // Получаем список ID заявок из запроса
+        // Получаем список id заявок из запроса
         List<Long> requestIds = request.getRequestIds();
         List<ParticipationRequest> requests = requestRepository.findAllByIdIn(requestIds);
 

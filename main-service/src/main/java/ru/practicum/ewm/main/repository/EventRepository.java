@@ -11,6 +11,7 @@ import java.util.Optional;
 
 
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
+
     Optional<Event> findByIdAndInitiatorId(Long id, Long userId);
 
     boolean existsByIdAndInitiatorId(Long id, Long userId);

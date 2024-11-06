@@ -65,8 +65,9 @@ public class CategoryServiceImpl implements CategoryService {
         } catch (DataIntegrityViolationException e) {
             throw new ConflictException(e.getMessage(), e);
         }*/
-        log.info("Добавлена категория: {}", category.getName());
-        return CategoryMapper.mapToDto(categoryRepository.save(category));
+        CategoryDto savedCategory = CategoryMapper.mapToDto(categoryRepository.save(category));
+        log.info("Добавлена категория: {} с id = {}", savedCategory.getName(), savedCategory.getId());
+        return savedCategory;
     }
 
     public CategoryDto update(final CategoryDto dto, final Long catId) {
