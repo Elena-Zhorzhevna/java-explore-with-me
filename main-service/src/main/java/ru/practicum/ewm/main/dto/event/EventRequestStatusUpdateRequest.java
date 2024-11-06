@@ -2,6 +2,7 @@ package ru.practicum.ewm.main.dto.event;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.*;
 
 import java.util.List;
 
@@ -9,6 +10,11 @@ import java.util.List;
  *
  * Изменение статуса запроса на участие в событии текущего пользователя.
  */
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class EventRequestStatusUpdateRequest {
 
     /**

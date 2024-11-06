@@ -2,16 +2,25 @@ package ru.practicum.ewm.main.mapper;
 
 import ru.practicum.ewm.main.dto.event.*;
 import ru.practicum.ewm.main.dto.location.LocationDto;
+import ru.practicum.ewm.main.model.Category;
 import ru.practicum.ewm.main.model.Event;
 import ru.practicum.ewm.main.model.Location;
+import ru.practicum.ewm.main.model.User;
 import ru.practicum.ewm.main.model.enums.State;
 
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventMapper {
-    public static Event mapNewEventDtoToEvent(NewEventDto dto) {
+    public static Event mapNewEventDtoToEvent(NewEventDto dto, User user, Category category) {
+        if (dto == null) {
+            throw new IllegalArgumentException("NewEventDto не может быть null");
+        }
+        if (category == null) {
+            throw new IllegalArgumentException("Категория не может быть null");
+        }
+
         return Event.builder()
                 .annotation(dto.getAnnotation())
                 .createdOn(LocalDateTime.now())
@@ -19,6 +28,8 @@ public class EventMapper {
                 .eventDate(dto.getEventDate())
                 .location(new Location(dto.getLocation().getLat(), dto.getLocation().getLon()))
                 .paid(dto.getPaid())
+                .initiator(user)
+                .category(category)
                 .participantLimit(dto.getParticipantLimit())
                 .requestModeration(dto.getRequestModeration())
                 .state(State.PENDING)
@@ -89,9 +100,9 @@ public class EventMapper {
                 .build();
     }
 
-    public static Set<EventShortDto> toEventShortDtoList(Set<Event> events) {
+    public static List<EventShortDto> toEventShortDtoList(List<Event> events) {
         return events.stream()
                 .map(EventMapper::mapToEventShortDto)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 }

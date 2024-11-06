@@ -12,10 +12,10 @@ import lombok.*;
 @Builder
 public class NewUserRequest {
     @NotBlank
-    @Size(max = 128)
+    @Size(min = 2, max = 250)
     private String name;
     @Email
     @NotBlank
-    @Size(max = 255)
+    @Size(min = 6, max = 254)
     private String email;
 }

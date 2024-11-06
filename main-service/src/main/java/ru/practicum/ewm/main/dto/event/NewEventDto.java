@@ -1,8 +1,8 @@
 package ru.practicum.ewm.main.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
-import ru.practicum.ewm.main.dto.category.CategoryDto;
 import ru.practicum.ewm.main.model.Location;
 
 import java.time.LocalDateTime;
@@ -21,7 +21,8 @@ public class NewEventDto {
     /**
      * Категория, к которой относится событие.
      */
-    private CategoryDto category;
+    @JsonProperty("id")
+    private Long category;
 
     /**
      * Полное описание события.
