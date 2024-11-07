@@ -4,6 +4,8 @@ package ru.practicum.ewm.main.dto.compilation;
 import lombok.*;
 import ru.practicum.ewm.main.dto.event.EventShortDto;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -30,5 +32,5 @@ public class CompilationDto {
     /**
      * Список событий входящих в подборку.
      */
-    private Set<EventShortDto> events;
+    private Set<EventShortDto> events = new HashSet<>();
 }

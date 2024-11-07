@@ -8,6 +8,7 @@ import ru.practicum.ewm.main.model.Event;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecificationExecutor<Event> {
@@ -19,6 +20,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     List<Event> findByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(String annotation,
                                                                                       String description);
 
+    Set<Event> findAllByIdIn(Set<Long> eventIds);
     List<Event> findByCategoryIdIn(List<Long> categoryIds);
 
     List<Event> findByPaid(Boolean paid);

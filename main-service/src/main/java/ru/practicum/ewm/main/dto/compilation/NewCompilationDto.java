@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -26,5 +27,5 @@ public class NewCompilationDto {
     /**
      * Список идентификаторов событий входящих в подборку.
      */
-    private Set<Long> events;
+    private Set<Long> events = new HashSet<>();
 }

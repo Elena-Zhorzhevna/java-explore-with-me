@@ -6,15 +6,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.main.dto.category.CategoryDto;
 import ru.practicum.ewm.main.dto.category.NewCategoryDto;
-import ru.practicum.ewm.main.service.category.CategoryServiceImpl;
+import ru.practicum.ewm.main.service.category.CategoryService;
 
 @Slf4j
 @RestController
 @RequestMapping("/admin/categories")
 public class AdminCategoryController {
-    public final CategoryServiceImpl categoryService;
+    public final CategoryService categoryService;
 
-    public AdminCategoryController(CategoryServiceImpl categoryService) {
+    public AdminCategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 

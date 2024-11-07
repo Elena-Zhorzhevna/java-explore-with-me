@@ -1,5 +1,6 @@
 package ru.practicum.ewm.main.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.practicum.ewm.main.model.enums.State;
@@ -48,6 +49,7 @@ public class Event {
      * Дата и время создания события (в формате "yyyy-MM-dd HH:mm:ss").
      */
     @Column(name = "created_on")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdOn;
 
     /**
@@ -60,6 +62,7 @@ public class Event {
      * Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss").
      */
     @Column(name = "date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
     /**
@@ -95,6 +98,7 @@ public class Event {
      * Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss").
      */
     @Column(name = "published_on")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;
 
     /**

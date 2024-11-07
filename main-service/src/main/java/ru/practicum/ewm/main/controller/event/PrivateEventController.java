@@ -3,6 +3,7 @@ package ru.practicum.ewm.main.controller.event;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.ewm.main.dto.event.*;
 import ru.practicum.ewm.main.dto.request.ParticipationRequestDto;
@@ -15,6 +16,7 @@ import java.util.Set;
 
 
 @Slf4j
+@Validated
 @RestController
 @RequestMapping("/users/{userId}/events")
 public class PrivateEventController {
@@ -38,7 +40,7 @@ public class PrivateEventController {
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto get(@PathVariable Long userId,
                             @PathVariable Long eventId) {
-        log.info("Получен запрос GET /users{}/events/{}", userId, eventId);
+        log.info("Получен GET-запрос  /users{}/events/{}", userId, eventId);
         return eventService.get(userId, eventId);
     }
 
@@ -46,7 +48,7 @@ public class PrivateEventController {
     @ResponseStatus(value = HttpStatus.OK)
     public List<ParticipationRequestDto> getRequests(@PathVariable Long userId,
                                                      @PathVariable Long eventId) {
-        log.info("Получен запрос GET /users/{}/events/{}/requests", userId, eventId);
+        log.info("Получен GET-запрос /users/{}/events/{}/requests", userId, eventId);
         return eventService.getRequests(userId, eventId);
     }
 
@@ -54,7 +56,7 @@ public class PrivateEventController {
     @ResponseStatus(value = HttpStatus.CREATED)
     public EventFullDto create(@PathVariable Long userId,
                                @RequestBody @Valid NewEventDto eventDto) {
-        log.info("Получен запрос POST /users/{}/events c новым событием: {}", userId, eventDto);
+        log.info("Получен POST-запрос /users/{}/events c новым событием: {}", userId, eventDto.getTitle());
         return eventService.create(userId, eventDto);
     }
 
@@ -62,7 +64,7 @@ public class PrivateEventController {
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto update(@PathVariable Long userId, @PathVariable Long eventId,
                                @RequestBody @Valid UpdateEventUserRequest eventDto) {
-        log.info("Получен запрос PATCH /users/{}/events/{eventId}" +
+        log.info("Получен PATCH-запрос  /users/{}/events/{eventId}" +
                 " c обновлённым событием id = {}: {}", userId, eventId, eventDto);
         return eventService.update(userId, eventId, eventDto);
     }
@@ -71,10 +73,10 @@ public class PrivateEventController {
     @ResponseStatus(value = HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequestStatus(@PathVariable Long userId, @PathVariable Long eventId,
                                                               @RequestBody EventRequestStatusUpdateRequest request) {
-        log.info("Получен запрос PATCH /users/{}/events/{eventId}/requests" +
+        log.info("Получен PATCH-запрос /users/{}/events/{eventId}/requests" +
                 " на обновление статуса события id = {}: {}", userId, eventId, request);
         if (Status.from(request.getStatus()) == null) {
-            throw new ConflictException("Status is not validate");
+            throw new ConflictException("Статус не подтвержден.");
         }
         return eventService.updateRequestStatus(userId, eventId, request);
     }

@@ -6,6 +6,7 @@ import ru.practicum.ewm.main.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.ewm.main.model.Compilation;
 
 import java.util.List;
+
 import java.util.stream.Collectors;
 
 public class CompilationMapper {
@@ -28,15 +29,13 @@ public class CompilationMapper {
                 .id(compilation.getId())
                 .pinned(compilation.isPinned())
                 .title(compilation.getTitle())
-                //.events(EventMapper.toEventShortDtoList((compilation.getEvents())))
+                .events(EventMapper.toEventShortDtoList(compilation.getEvents()))
                 .build();
     }
 
-    public static List<CompilationDto> toDtoList(List<Compilation> compilations) {
+    public static List<CompilationDto> mapToDtoList(List<Compilation> compilations) {
         return compilations.stream()
                 .map(CompilationMapper::mapToDto)
                 .collect(Collectors.toList());
     }
-
-
 }

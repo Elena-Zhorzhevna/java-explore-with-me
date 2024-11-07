@@ -9,7 +9,8 @@ import ru.practicum.ewm.main.model.User;
 import ru.practicum.ewm.main.model.enums.State;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EventMapper {
@@ -33,6 +34,7 @@ public class EventMapper {
                 .participantLimit(dto.getParticipantLimit())
                 .requestModeration(dto.getRequestModeration())
                 .state(State.PENDING)
+                .views(0L)
                 .title(dto.getTitle())
                 .build();
     }
@@ -100,9 +102,10 @@ public class EventMapper {
                 .build();
     }
 
-    public static List<EventShortDto> toEventShortDtoList(List<Event> events) {
-        return events.stream()
-                .map(EventMapper::mapToEventShortDto)
-                .collect(Collectors.toList());
+    public static Set<EventShortDto> toEventShortDtoList(Set<Event> events) {
+        if (events == null) {
+            return Collections.emptySet();
+        }
+        return events.stream().map(EventMapper::mapToEventShortDto).collect(Collectors.toSet());
     }
 }
