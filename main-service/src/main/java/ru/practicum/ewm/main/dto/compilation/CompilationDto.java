@@ -1,11 +1,9 @@
 package ru.practicum.ewm.main.dto.compilation;
 
-
 import lombok.*;
 import ru.practicum.ewm.main.dto.event.EventShortDto;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Getter

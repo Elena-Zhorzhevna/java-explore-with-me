@@ -1,6 +1,5 @@
 package ru.practicum.ewm.main.service.compilation;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
 import ru.practicum.ewm.main.dto.compilation.CompilationDto;
 import ru.practicum.ewm.main.dto.compilation.NewCompilationDto;
 import ru.practicum.ewm.main.dto.compilation.UpdateCompilationRequest;

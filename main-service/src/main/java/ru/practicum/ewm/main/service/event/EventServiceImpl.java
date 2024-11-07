@@ -115,7 +115,6 @@ public class EventServiceImpl implements EventService {
         log.info("Начало обработки запроса на обновление события с id = {}", eventId);
         log.info("Полученные данные для обновления: {}", updateEvent);
 
-        // Получаем событие по ID
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
                     log.error("Событие с ID = {} не найдено", eventId);
@@ -124,7 +123,6 @@ public class EventServiceImpl implements EventService {
 
         log.info("Событие найдено: {}", event);
 
-        // Обновляем данные вручную, проверяя каждое поле на null
         if (updateEvent.getTitle() != null) {
             event.setTitle(updateEvent.getTitle());
             log.info("Обновлено поле title: {}", updateEvent.getTitle());
@@ -207,7 +205,6 @@ public class EventServiceImpl implements EventService {
         Set<EventShortDto> eventShorts = new HashSet<>(EventMapper.toEventShortDtoList(eventsList));
 
         log.info("Длина списка событий: {}", eventShorts.size());
-
         return eventShorts;
     }
 

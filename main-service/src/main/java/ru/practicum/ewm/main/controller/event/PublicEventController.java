@@ -63,16 +63,13 @@ public class PublicEventController {
                 .request(request)
                 .build();
 
-        // Получаем список событий от сервиса
         return eventService.getAllPublic(param);
     }
 
-    // Метод для получения подробной информации о событии по ID
     @GetMapping("/{id}")
     public EventFullDto getById(@PathVariable Long id, HttpServletRequest request) {
         log.info("Получен запрос GET /events/{}", id);
 
-        // Получаем полную информацию о событии
         return eventService.getById(id, request);
     }
 }

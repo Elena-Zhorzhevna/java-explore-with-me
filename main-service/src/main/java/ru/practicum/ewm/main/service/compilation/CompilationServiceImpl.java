@@ -88,12 +88,11 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     public List<CompilationDto> getAllPublic(Boolean pinned, Integer from, Integer size) {
-        // Проверка, что from и size не null и корректно настроены
+
         if (from == null || size == null || from < 0 || size <= 0) {
             throw new IllegalArgumentException("Invalid pagination parameters.");
         }
 
-        // Корректное создание Pageable, учитывая индексацию
         Page<Compilation> compilationsPage;
         if (pinned != null) {
             compilationsPage = compilationRepository.findAllByPinned(pinned, PageRequest.of(from / size,
@@ -103,13 +102,11 @@ public class CompilationServiceImpl implements CompilationService {
                     Sort.by(Sort.Direction.ASC, "id")));
         }
 
-        // Преобразуем Page<Compilation> в List<Compilation>
         List<Compilation> compilations = compilationsPage.getContent();
 
         log.info("Retrieved compilations: size={} (total elements: {})", compilations.size(),
                 compilationsPage.getTotalElements());
 
-        // Преобразуем в DTO и возвращаем
         return CompilationMapper.mapToDtoList(compilations);
     }
 
