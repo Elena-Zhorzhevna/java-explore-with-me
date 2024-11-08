@@ -23,7 +23,7 @@ public class NewCompilationDto {
     /**
      * Закреплена ли подборка на главной странице сайта.
      */
-    private boolean pinned;
+    private boolean pinned = false;
     /**
      * Список идентификаторов событий входящих в подборку.
      */

@@ -56,7 +56,7 @@ public class EventShortDto {
      * Нужно ли оплачивать участие.
      */
     @NotBlank
-    private Boolean paid;
+    private Boolean paid = false;
 
     /**
      * Заголовок.

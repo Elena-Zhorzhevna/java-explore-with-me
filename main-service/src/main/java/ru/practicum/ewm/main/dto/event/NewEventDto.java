@@ -53,18 +53,18 @@ public class NewEventDto {
     /**
      * Нужно ли оплачивать участие.
      */
-    private Boolean paid;
+    private Boolean paid = false;
 
     /**
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения.
      */
     @PositiveOrZero
-    private Long participantLimit;
+    private Long participantLimit = 0L;
 
     /**
      * Нужна ли пре-модерация заявок на участие.
      */
-    private Boolean requestModeration;
+    private Boolean requestModeration = true;
 
     /**
      * Заголовок.

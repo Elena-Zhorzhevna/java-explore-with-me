@@ -2,6 +2,7 @@ package ru.practicum.ewm.main.service.event;
 
 import ewm.ParamHitDto;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -119,7 +120,7 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
-                    log.error("Событие с ID = {} не найдено", eventId);
+                    log.error("Событие с id = {} не найдено", eventId);
                     return new NotFoundException("Событие с id = " + eventId + " не найдено.");
                 });
 
@@ -199,27 +200,17 @@ public class EventServiceImpl implements EventService {
      * Private
      */
     @Override
-    public Set<EventShortDto> getAllPrivate(Long userId, Integer from, Integer size) {
-        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
+    public Set<EventShortDto> getAllPrivate(Long userId, Integer page, Integer size) {
 
-        List<Event> eventsList = eventRepository.findAll(page).getContent();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
+
+        List<Event> eventsList = eventRepository.findAll(pageable).getContent();
         Set<EventShortDto> eventShorts = new HashSet<>(EventMapper.toEventShortDtoList(eventsList));
 
         log.info("Длина списка событий: {}", eventShorts.size());
         return eventShorts;
     }
-/*
-    @Override
-    public Set<EventShortDto> getAllPrivate(Long userId, Integer from, Integer size) {
-        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
 
-        Set<Event> eventsList = (Set<Event>) eventRepository.findAll(page).getContent();
-        Set<EventShortDto> eventShorts = new HashSet<>(EventMapper.toEventShortDtoList(eventsList));
-
-        log.info("Длина списка событий: {}", eventShorts.size());
-        return eventShorts;
-    }
-*/
 
     @Override
     public EventFullDto get(Long userId, Long eventId) {
@@ -329,6 +320,7 @@ public class EventServiceImpl implements EventService {
             switch (updateEventUserDto.getStateAction()) {
                 case CANCEL_REVIEW:
                     eventToPatch.setState(State.CANCELED);
+                    eventToPatch.setPaid(false);
                     break;
                 case SEND_TO_REVIEW:
                     eventToPatch.setState(State.PENDING);
@@ -430,7 +422,6 @@ public class EventServiceImpl implements EventService {
                 event.setConfirmedRequests(participantLimit);
             }
         }
-
         eventRepository.save(event);
         requestRepository.saveAll(requests);
         requestRepository.flush();
@@ -614,7 +605,7 @@ public class EventServiceImpl implements EventService {
      */
     private void checkEventDate(LocalDateTime eventDate) {
         if (eventDate != null && eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ConflictException("Поле: eventDate. Ошибка: дата и время запланированного мероприятия не могут " +
+            throw new ValidationException("Поле: eventDate. Ошибка: дата и время запланированного мероприятия не могут " +
                     "быть ранее, чем через 2 часа после текущего момента. Значение: " + eventDate);
         }
     }

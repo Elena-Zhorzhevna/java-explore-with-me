@@ -30,10 +30,10 @@ public abstract class UpdateEventRequest {
     private LocalDateTime eventDate;
     @Valid
     private LocationDto location;
-    private Boolean paid;
+    private Boolean paid = false;
     @PositiveOrZero
-    private Long participantLimit;
-    private Boolean requestModeration;
+    private Long participantLimit = 0L;
+    private Boolean requestModeration = true;
     @Size(min = 3, max = 120)
     private String title;
 }

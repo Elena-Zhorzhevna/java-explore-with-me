@@ -73,12 +73,12 @@ public class EventFullDto {
      * Нужно ли оплачивать участие.
      */
     @NotBlank
-    private Boolean paid;
+    private Boolean paid = false;
 
     /**
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения.
      */
-    private Long participantLimit;
+    private Long participantLimit = 0L;
 
     /**
      * Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss").
@@ -89,7 +89,7 @@ public class EventFullDto {
     /**
      * Нужна ли пре-модерация заявок на участие.
      */
-    private Boolean requestModeration;
+    private Boolean requestModeration = true;
 
     /**
      * Список состояний жизненного цикла события.

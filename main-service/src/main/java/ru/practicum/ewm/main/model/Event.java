@@ -86,13 +86,13 @@ public class Event {
      * Нужно ли оплачивать участие.
      */
     @Column(name = "paid", nullable = false)
-    private Boolean paid;
+    private Boolean paid = false;
 
     /**
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения.
      */
     @Column(name = "participant_limit")
-    private Long participantLimit;
+    private Long participantLimit = 0L;
 
     /**
      * Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss").
@@ -105,7 +105,7 @@ public class Event {
      * Нужна ли пре-модерация заявок на участие.
      */
     @Column(name = "request_moderation")
-    private Boolean requestModeration;
+    private Boolean requestModeration = true;
 
     /**
      * Список состояний жизненного цикла события.

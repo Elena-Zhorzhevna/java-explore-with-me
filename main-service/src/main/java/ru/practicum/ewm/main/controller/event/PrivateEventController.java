@@ -32,9 +32,47 @@ public class PrivateEventController {
     public Set<EventShortDto> getAll(@PathVariable Long userId,
                                      @RequestParam(defaultValue = "0") Integer from,
                                      @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Получен GET-запрос /users{}/events с параметрами: from = {}, size = {}", userId, from, size);
+
+        // Параметр 'from' должен интерпретироваться как смещение
+        // Пагинация: делим отступ на размер страницы
+        int page = from / size;  // Вычисляем номер страницы
+
+        return eventService.getAllPrivate(userId, page, size);
+    }
+  /*  @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public Set<EventShortDto> getAll(@PathVariable Long userId,
+                                     @RequestParam(defaultValue = "0") Integer from,
+                                     @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Получен GET-запрос /users{}/events с параметрами: from = {}, size = {}", userId, from, size);
+
+        // Параметр 'from' должен интерпретироваться как смещение
+        // Например, если from = 0, это будет означать первую страницу
+        int page = from / size;  // Вычисляем номер страницы
+
+        return eventService.getAllPrivate(userId, page, size);
+    }*/
+ /*   @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public Set<EventShortDto> getAll(@PathVariable Long userId,
+                                     @RequestParam(defaultValue = "0") Integer from,
+                                     @RequestParam(defaultValue = "10") Integer size) {
+        log.info("Получен GET-запрос /users{}/events c параметрами: from = {}, size = {}", userId, from, size);
+
+        // Преобразуем 'from' в индекс страницы, если это необходимо
+        int page = from / size;  // Определяем номер страницы на основе 'from'
+
+        return eventService.getAllPrivate(userId, page, size);
+    }*/
+/*    @GetMapping
+    @ResponseStatus(value = HttpStatus.OK)
+    public Set<EventShortDto> getAll(@PathVariable Long userId,
+                                     @RequestParam(defaultValue = "0") Integer from,
+                                     @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен GET-запрос /users{}/events c параметрами: from = {}, size = {}", userId, from, size);
         return eventService.getAllPrivate(userId, from, size);
-    }
+    }*/
 
     @GetMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)

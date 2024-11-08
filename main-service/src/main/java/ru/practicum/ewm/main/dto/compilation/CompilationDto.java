@@ -26,7 +26,7 @@ public class CompilationDto {
     /**
      * Закреплена ли подборка на главной странице сайта.
      */
-    private boolean pinned;
+    private boolean pinned = false;
 
     /**
      * Список событий входящих в подборку.

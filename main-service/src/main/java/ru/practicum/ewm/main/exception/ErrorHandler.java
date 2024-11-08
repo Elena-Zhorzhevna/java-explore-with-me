@@ -69,15 +69,15 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflictException(final ConflictException e) {
-        log.error("400 {}", e.getMessage());
+        log.error("409 {}", e.getMessage());
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);
         e.printStackTrace(pw);
         String stackTrace = sw.toString();
         return new ApiError(
-                HttpStatus.BAD_REQUEST.toString(),
+                HttpStatus.CONFLICT.toString(),
                 "Validation error",
                 e.getMessage(),
                 stackTrace,

@@ -30,7 +30,7 @@ public class Compilation {
      * Закреплена ли подборка на главной странице сайта.
      */
     @Column(name = "pinned")
-    private boolean pinned;
+    private boolean pinned = false;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "event_compilation",

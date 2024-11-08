@@ -74,14 +74,16 @@ public class RequestServiceImpl implements RequestService {
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException(String.format("Событие с id=%d не опубликовано.", eventId));
         }
-        if (event.getParticipantLimit().equals(event.getConfirmedRequests())) {
+        if (event.getParticipantLimit() > 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
             throw new ConflictException(String.format("У события с id=%d достигнут лимит участников. ", eventId));
         }
         if (!event.getRequestModeration()) {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         }
-        return RequestMapper.toParticipationRequestDto(requestRepository.save(RequestMapper.mapToRequest(event, user)));
+        ParticipationRequest participationRequest = requestRepository.save(RequestMapper.mapToRequest(event, user));
+        participationRequest.setStatus(Status.CONFIRMED);
+        return RequestMapper.toParticipationRequestDto(participationRequest);
     }
 
     /**

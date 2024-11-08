@@ -13,7 +13,7 @@ import java.util.Set;
 @Builder
 public class UpdateCompilationRequest {
     private Set<Long> events = new HashSet<>();
-    private Boolean pinned;
+    private Boolean pinned = false;
     @Size(min = 1, max = 50)
     private String title;
 }
