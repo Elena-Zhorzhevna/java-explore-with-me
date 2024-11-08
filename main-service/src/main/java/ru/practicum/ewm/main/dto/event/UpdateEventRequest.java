@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,10 +21,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public abstract class UpdateEventRequest {
 
-    @Length(min = 10, max = 1500)
+    @Length(min = 20 , max = 2000)
     private String annotation;
     private Long category;
-    @Length(min = 10, max = 5000)
+    @Length(min = 20, max = 7000)
     private String description;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
@@ -33,6 +34,6 @@ public abstract class UpdateEventRequest {
     @PositiveOrZero
     private Long participantLimit;
     private Boolean requestModeration;
-    @Length(min = 3, max = 120)
+    @Size(min = 3, max = 120)
     private String title;
 }

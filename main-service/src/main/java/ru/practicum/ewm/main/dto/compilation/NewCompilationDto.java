@@ -18,7 +18,7 @@ public class NewCompilationDto {
      * Заголовок подборки.
      */
     @NotBlank
-    @Size(max = 128)
+    @Size(min = 1,max = 50)
     private String title;
     /**
      * Закреплена ли подборка на главной странице сайта.

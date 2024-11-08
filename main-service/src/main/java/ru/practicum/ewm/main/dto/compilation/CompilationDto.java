@@ -1,5 +1,6 @@
 package ru.practicum.ewm.main.dto.compilation;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import ru.practicum.ewm.main.dto.event.EventShortDto;
 

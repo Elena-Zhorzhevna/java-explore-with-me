@@ -1,6 +1,7 @@
 package ru.practicum.ewm.main.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import ru.practicum.ewm.main.dto.user.UserShortDto;
 import ru.practicum.ewm.main.dto.category.CategoryDto;
@@ -25,11 +26,13 @@ public class EventShortDto {
     /**
      * Краткое описание события.
      */
+    @NotBlank
     private String annotation;
 
     /**
      * Категория, к которой относится событие.
      */
+    @NotBlank
     private CategoryDto category;
 
     /**
@@ -46,16 +49,19 @@ public class EventShortDto {
     /**
      * Пользователь (краткая информация).
      */
+    @NotBlank
     private UserShortDto initiator;
 
     /**
      * Нужно ли оплачивать участие.
      */
+    @NotBlank
     private Boolean paid;
 
     /**
      * Заголовок.
      */
+    @NotBlank
     private String title;
 
     /**

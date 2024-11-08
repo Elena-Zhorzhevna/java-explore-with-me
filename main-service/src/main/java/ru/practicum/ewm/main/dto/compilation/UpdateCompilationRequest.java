@@ -14,6 +14,6 @@ import java.util.Set;
 public class UpdateCompilationRequest {
     private Set<Long> events = new HashSet<>();
     private Boolean pinned;
-    @Size(max = 128)
+    @Size(min = 1, max = 50)
     private String title;
 }

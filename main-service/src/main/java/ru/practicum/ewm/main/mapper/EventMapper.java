@@ -10,6 +10,7 @@ import ru.practicum.ewm.main.model.enums.State;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -102,7 +103,7 @@ public class EventMapper {
                 .build();
     }
 
-    public static Set<EventShortDto> toEventShortDtoList(Set<Event> events) {
+    public static Set<EventShortDto> toEventShortDtoList(List<Event> events) {
         if (events == null) {
             return Collections.emptySet();
         }

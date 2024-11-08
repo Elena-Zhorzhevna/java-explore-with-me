@@ -10,7 +10,10 @@ import ru.practicum.ewm.main.model.enums.StateAdminAction;
 @NoArgsConstructor
 public class UpdateEventAdminRequest extends UpdateEventRequest {
 
-    private StateAdminAction stateAction;  // Действие администратора (опубликовать или отклонить)
+    /**
+     * Действие администратора, опубликовать или отклонить.
+     */
+    private StateAdminAction stateAction;
 
     public UpdateEventAdminRequest(StateAdminAction stateAction) {
         this.stateAction = stateAction;

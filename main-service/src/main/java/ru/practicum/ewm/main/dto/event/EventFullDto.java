@@ -1,6 +1,8 @@
 package ru.practicum.ewm.main.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import ru.practicum.ewm.main.dto.location.LocationDto;
 import ru.practicum.ewm.main.dto.user.UserShortDto;
@@ -24,6 +26,7 @@ public class EventFullDto {
     /**
      * Краткое описание события.
      */
+    @NotBlank
     private String annotation;
 
     /**
@@ -50,22 +53,26 @@ public class EventFullDto {
     /**
      * Дата и время на которые намечено событие (в формате "yyyy-MM-dd HH:mm:ss").
      */
+    @NotBlank
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime eventDate;
 
     /**
      * Пользователь (краткая информация).
      */
+    @NotBlank
     private UserShortDto initiator;
 
     /**
      * Широта и долгота места проведения событий.
      */
+    @NotBlank
     private LocationDto location;
 
     /**
      * Нужно ли оплачивать участие.
      */
+    @NotBlank
     private Boolean paid;
 
     /**
@@ -76,6 +83,7 @@ public class EventFullDto {
     /**
      * Дата и время публикации события (в формате "yyyy-MM-dd HH:mm:ss").
      */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime publishedOn;
 
     /**
@@ -91,6 +99,8 @@ public class EventFullDto {
     /**
      * Заголовок.
      */
+    @NotBlank
+    @Size(min = 3, max = 120)
     private String title;
 
     /**

@@ -1,6 +1,8 @@
 package ru.practicum.ewm.main.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Getter
@@ -15,6 +17,7 @@ public class Category {
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(max = 50)
     @Column(name = "name", nullable = false)
     private String name;
 }

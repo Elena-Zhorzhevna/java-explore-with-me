@@ -115,6 +115,8 @@ public class EventServiceImpl implements EventService {
         log.info("Начало обработки запроса на обновление события с id = {}", eventId);
         log.info("Полученные данные для обновления: {}", updateEvent);
 
+        checkEventDate(updateEvent.getEventDate());
+
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
                     log.error("Событие с ID = {} не найдено", eventId);
@@ -196,7 +198,17 @@ public class EventServiceImpl implements EventService {
     /**
      * Private
      */
+    @Override
+    public Set<EventShortDto> getAllPrivate(Long userId, Integer from, Integer size) {
+        Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
 
+        List<Event> eventsList = eventRepository.findAll(page).getContent();
+        Set<EventShortDto> eventShorts = new HashSet<>(EventMapper.toEventShortDtoList(eventsList));
+
+        log.info("Длина списка событий: {}", eventShorts.size());
+        return eventShorts;
+    }
+/*
     @Override
     public Set<EventShortDto> getAllPrivate(Long userId, Integer from, Integer size) {
         Pageable page = PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "id"));
@@ -207,6 +219,7 @@ public class EventServiceImpl implements EventService {
         log.info("Длина списка событий: {}", eventShorts.size());
         return eventShorts;
     }
+*/
 
     @Override
     public EventFullDto get(Long userId, Long eventId) {
@@ -262,70 +275,68 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto update(Long userId, Long eventId, UpdateEventUserRequest updateEventUserDto) {
 
-        Event eventToUpdate = eventRepository.findByIdAndInitiatorId(eventId, userId)
+        Event eventToPatch = eventRepository.findByIdAndInitiatorId(eventId, userId)
                 .orElseThrow(() -> new NotFoundException(
                         String.format("Не найдено событие с id = %s и userId = %s", eventId, userId)));
 
-        Event eventUpdate = EventMapper.mapUpdateEventUserRequestToEvent(updateEventUserDto);
-
-        checkEventDate(eventUpdate.getEventDate());
+        checkEventDate(updateEventUserDto.getEventDate());
 
         if (updateEventUserDto.getTitle() != null) {
-            eventUpdate.setTitle(updateEventUserDto.getTitle());
+            eventToPatch.setTitle(updateEventUserDto.getTitle());
         }
 
         if (updateEventUserDto.getAnnotation() != null) {
-            eventUpdate.setAnnotation(updateEventUserDto.getAnnotation());
+            eventToPatch.setAnnotation(updateEventUserDto.getAnnotation());
         }
 
         if (updateEventUserDto.getDescription() != null) {
-            eventUpdate.setDescription(updateEventUserDto.getDescription());
+            eventToPatch.setDescription(updateEventUserDto.getDescription());
         }
 
         if (updateEventUserDto.getEventDate() != null) {
-            eventUpdate.setEventDate(updateEventUserDto.getEventDate());
+            eventToPatch.setEventDate(updateEventUserDto.getEventDate());
         }
 
         if (updateEventUserDto.getPaid() != null) {
-            eventUpdate.setPaid(updateEventUserDto.getPaid());
+            eventToPatch.setPaid(updateEventUserDto.getPaid());
         }
 
         if (updateEventUserDto.getParticipantLimit() != null) {
-            eventUpdate.setParticipantLimit(updateEventUserDto.getParticipantLimit());
+            eventToPatch.setParticipantLimit(updateEventUserDto.getParticipantLimit());
         }
 
         if (updateEventUserDto.getRequestModeration() != null) {
-            eventUpdate.setRequestModeration(updateEventUserDto.getRequestModeration());
+            eventToPatch.setRequestModeration(updateEventUserDto.getRequestModeration());
         }
 
         if (updateEventUserDto.getCategory() != null) {
             Category category = categoryRepository.findById(updateEventUserDto.getCategory())
                     .orElseThrow(() -> new NotFoundException(String.format("Не найдена категория с id=%d",
                             updateEventUserDto.getCategory())));
-            eventUpdate.setCategory(category);
+            eventToPatch.setCategory(category);
         }
 
         if (updateEventUserDto.getLocation() != null) {
             LocationDto locationDto = updateEventUserDto.getLocation();
-            eventUpdate.setLocation(new Location(locationDto.getLat(), locationDto.getLon()));
+            eventToPatch.setLocation(new Location(locationDto.getLat(), locationDto.getLon()));
         }
 
-        if (eventToUpdate.getState().equals(State.PUBLISHED)) {
+        if (eventToPatch.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Событие не должно быть опубликовано.");
         }
 
         if (updateEventUserDto.getStateAction() != null) {
             switch (updateEventUserDto.getStateAction()) {
                 case CANCEL_REVIEW:
-                    eventUpdate.setState(State.CANCELED);
+                    eventToPatch.setState(State.CANCELED);
                     break;
                 case SEND_TO_REVIEW:
-                    eventUpdate.setState(State.PENDING);
+                    eventToPatch.setState(State.PENDING);
                     break;
             }
         }
 
-        Event updatedEvent = eventRepository.save(eventUpdate);
+        Event updatedEvent = eventRepository.save(eventToPatch);
 
         log.info("Обновлено событие: {}", updatedEvent.getTitle());
         return EventMapper.mapEventToEventFullDto(updatedEvent);
@@ -451,7 +462,7 @@ public class EventServiceImpl implements EventService {
 
         List<Event> paginatedEventsList = eventsList.subList(fromIndex, toIndex);
 
-        Set<EventShortDto> eventShortsList = EventMapper.toEventShortDtoList(new HashSet<>(paginatedEventsList));
+        Set<EventShortDto> eventShortsList = EventMapper.toEventShortDtoList(paginatedEventsList);
         log.info("Получено {} событий", eventShortsList.size());
 
         saveEndpointHit(param.getRequest());
@@ -464,7 +475,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException(String.format("Не найдено событие с id = %s", id)));
 
         if (!event.getState().equals(State.PUBLISHED)) {
-            throw new ConflictException(String.format("Событие с id=%d не опубликовано.", id));
+            throw new NotFoundException(String.format("Событие с id=%d не опубликовано.", id));
         }
 
         saveEndpointHit(request);
