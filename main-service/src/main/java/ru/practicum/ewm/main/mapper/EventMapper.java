@@ -103,10 +103,10 @@ public class EventMapper {
                 .build();
     }
 
-    public static Set<EventShortDto> toEventShortDtoList(List<Event> events) {
+    public static List<EventShortDto> toEventShortDtoList(List<Event> events) {
         if (events == null) {
-            return Collections.emptySet();
+            return Collections.emptyList();
         }
-        return events.stream().map(EventMapper::mapToEventShortDto).collect(Collectors.toSet());
+        return events.stream().map(EventMapper::mapToEventShortDto).collect(Collectors.toList());
     }
 }

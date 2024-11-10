@@ -29,7 +29,7 @@ public class PrivateEventController {
 
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
-    public Set<EventShortDto> getAll(@PathVariable Long userId,
+    public List<EventShortDto> getAll(@PathVariable Long userId,
                                      @RequestParam(defaultValue = "0") Integer from,
                                      @RequestParam(defaultValue = "10") Integer size) {
         log.info("Получен GET-запрос /users{}/events с параметрами: from = {}, size = {}", userId, from, size);

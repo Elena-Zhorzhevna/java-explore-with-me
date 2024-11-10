@@ -21,7 +21,7 @@ public interface EventService {
      * Private
      */
 
-    Set<EventShortDto> getAllPrivate(Long userId, Integer from, Integer size);
+    List<EventShortDto> getAllPrivate(Long userId, Integer from, Integer size);
 
     EventFullDto get(Long userId, Long eventId);
 
@@ -36,7 +36,7 @@ public interface EventService {
     /**
      * Public
      */
-    Set<EventShortDto> getAllPublic(RequestPublicParamForEvent param);
+    List<EventShortDto> getAllPublic(RequestPublicParamForEvent param);
 
     EventFullDto getById(Long id, HttpServletRequest request);
 }

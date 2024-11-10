@@ -200,12 +200,12 @@ public class EventServiceImpl implements EventService {
      * Private
      */
     @Override
-    public Set<EventShortDto> getAllPrivate(Long userId, Integer page, Integer size) {
+    public List<EventShortDto> getAllPrivate(Long userId, Integer page, Integer size) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
 
         List<Event> eventsList = eventRepository.findAll(pageable).getContent();
-        Set<EventShortDto> eventShorts = new HashSet<>(EventMapper.toEventShortDtoList(eventsList));
+        List<EventShortDto> eventShorts = new ArrayList<>(EventMapper.toEventShortDtoList(eventsList));
 
         log.info("Длина списка событий: {}", eventShorts.size());
         return eventShorts;
@@ -434,7 +434,7 @@ public class EventServiceImpl implements EventService {
 
     @Transactional
     @Override
-    public Set<EventShortDto> getAllPublic(RequestPublicParamForEvent param) {
+    public List<EventShortDto> getAllPublic(RequestPublicParamForEvent param) {
 
         EventSearchParams searchParams = EventSearchParams.builder()
                 .text(param.getText())
@@ -453,7 +453,7 @@ public class EventServiceImpl implements EventService {
 
         List<Event> paginatedEventsList = eventsList.subList(fromIndex, toIndex);
 
-        Set<EventShortDto> eventShortsList = EventMapper.toEventShortDtoList(paginatedEventsList);
+        List<EventShortDto> eventShortsList = EventMapper.toEventShortDtoList(paginatedEventsList);
         log.info("Получено {} событий", eventShortsList.size());
 
         saveEndpointHit(param.getRequest());
@@ -473,14 +473,19 @@ public class EventServiceImpl implements EventService {
         log.info("Получено событие с id = {}", event.getId());
         long views = (event.getViews() != null) ? event.getViews() : 0L;
         event.setViews(views + 1);
-        eventRepository.flush();
+        eventRepository.save(event);
         return EventMapper.mapEventToEventFullDto(event);
     }
 
     public List<Event> findEventsBySearchParams(EventSearchParams searchParams) {
-        List<Event> events = eventRepository.findByAnnotationContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
-                searchParams.getText(), searchParams.getText()
-        );
+        List<Event> events = eventRepository.findAll();
+
+        if (searchParams.getText() != null && !searchParams.getText().isEmpty()) {
+            events = events.stream()
+                    .filter(event -> event.getAnnotation().contains(searchParams.getText())
+                            || event.getDescription().contains(searchParams.getText()))
+                    .collect(Collectors.toList());
+        }
 
         if (searchParams.getCategories() != null && !searchParams.getCategories().isEmpty()) {
             events = events.stream()

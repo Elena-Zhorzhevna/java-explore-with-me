@@ -31,7 +31,7 @@ public class PublicEventController {
 
     // Метод для получения всех событий с возможностью фильтрации
     @GetMapping
-    public Set<EventShortDto> getAll(
+    public List<EventShortDto> getAll(
             @RequestParam(required = false) String text,
             @RequestParam(required = false) List<Long> categories,
             @RequestParam(required = false) Boolean paid,
