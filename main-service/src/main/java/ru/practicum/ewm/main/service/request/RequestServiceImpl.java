@@ -55,7 +55,9 @@ public class RequestServiceImpl implements RequestService {
      * @param eventId Идентификатор события.
      * @return Добавленный запрос в формате Дто.
      */
+
     @Override
+    @Transactional
     public ParticipationRequestDto create(Long userId, Long eventId) {
 
         final Event event = eventRepository.findById(eventId)
@@ -87,7 +89,7 @@ public class RequestServiceImpl implements RequestService {
 
         participationRequest = requestRepository.save(participationRequest);
 
-        if (!event.getRequestModeration()) {
+        if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             participationRequest.setStatus(Status.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
@@ -106,6 +108,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     @Transactional
     public ParticipationRequestDto update(Long userId, Long requestId) {
+
         ParticipationRequest request = requestRepository.findByIdAndRequesterId(requestId, userId);
         if (request == null) {
             throw new NotFoundException(String.format("Запрос на участие с id=%d " +

@@ -1,12 +1,10 @@
 package ru.practicum.ewm.main.service.event;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.main.dto.event.*;
 import ru.practicum.ewm.main.dto.request.ParticipationRequestDto;
 
 import java.util.List;
-import java.util.Set;
 
 public interface EventService {
     /**

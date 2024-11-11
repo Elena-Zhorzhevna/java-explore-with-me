@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public abstract class UpdateEventRequest {
 
-    @Length(min = 20 , max = 2000)
+    @Length(min = 20, max = 2000)
     private String annotation;
     private Long category;
     @Length(min = 20, max = 7000)
@@ -30,10 +30,10 @@ public abstract class UpdateEventRequest {
     private LocalDateTime eventDate;
     @Valid
     private LocationDto location;
-    private Boolean paid = false;
+    private Boolean paid;
     @PositiveOrZero
-    private Long participantLimit = 0L;
-    private Boolean requestModeration = true;
+    private Long participantLimit;
+    private Boolean requestModeration;
     @Size(min = 3, max = 120)
     private String title;
 }

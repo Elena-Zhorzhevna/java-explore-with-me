@@ -17,6 +17,7 @@ import ru.practicum.ewm.main.dto.event.*;
 
 import ru.practicum.ewm.main.dto.location.LocationDto;
 import ru.practicum.ewm.main.dto.request.ParticipationRequestDto;
+import ru.practicum.ewm.main.exception.ConditionsNotMetException;
 import ru.practicum.ewm.main.exception.ConflictException;
 import ru.practicum.ewm.main.exception.NotFoundException;
 import ru.practicum.ewm.main.mapper.EventMapper;
@@ -25,6 +26,8 @@ import ru.practicum.ewm.main.model.*;
 
 import ru.practicum.ewm.main.model.enums.State;
 import ru.practicum.ewm.main.model.enums.StateAdminAction;
+import ru.practicum.ewm.main.model.enums.StateUserAction;
+import ru.practicum.ewm.main.model.enums.Status;
 import ru.practicum.ewm.main.repository.CategoryRepository;
 import ru.practicum.ewm.main.repository.EventRepository;
 import ru.practicum.ewm.main.repository.RequestRepository;
@@ -66,6 +69,12 @@ public class EventServiceImpl implements EventService {
      */
     @Override
     public List<EventFullDto> getAll(RequestParamForEvent param) {
+        if (param.getRangeStart() != null && param.getRangeEnd() != null) {
+            if (param.getRangeStart().isAfter(param.getRangeEnd())) {
+                throw new ConditionsNotMetException("Диапазон дат неверный: rangeStart не может быть позже rangeEnd.");
+            }
+        }
+
         List<Event> events = eventRepository.findAll();
 
         if (param.getUsers() != null && !param.getUsers().isEmpty()) {
@@ -113,10 +122,8 @@ public class EventServiceImpl implements EventService {
         log.info("Начало обработки запроса на обновление события с id = {}", eventId);
         log.info("Полученные данные для обновления: {}", updateEvent);
 
-        // Проверка корректности даты события (если требуется)
         checkEventDate(updateEvent.getEventDate());
 
-        // Находим событие по id
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> {
                     log.error("Событие с id = {} не найдено", eventId);
@@ -125,13 +132,12 @@ public class EventServiceImpl implements EventService {
 
         log.info("Событие найдено: {}", event);
 
-        // Проверка, не пытается ли админ повторно опубликовать событие, которое уже опубликовано
-        if (State.PUBLISHED.equals(event.getState()) && StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
+        if (State.PUBLISHED.equals(event.getState()) &&
+                StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
             log.error("Невозможно опубликовать событие с id = {}: оно уже опубликовано.", eventId);
             throw new ConflictException("Невозможно опубликовать событие: оно уже опубликовано.");
         }
 
-        // Обновление полей события, если они присутствуют в запросе
         if (updateEvent.getTitle() != null) {
             event.setTitle(updateEvent.getTitle());
             log.info("Обновлено поле title: {}", updateEvent.getTitle());
@@ -153,7 +159,6 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateEvent.getPaid() != null && !State.REJECTED.equals(event.getState())) {
-            // Если событие отклонено, не изменяем поле paid
             event.setPaid(updateEvent.getPaid());
             log.info("Обновлено поле paid: {}", updateEvent.getPaid());
         }
@@ -170,113 +175,8 @@ public class EventServiceImpl implements EventService {
 
         if (updateEvent.getCategory() != null) {
             Category category = categoryRepository.findById(updateEvent.getCategory())
-                    .orElseThrow(() -> new NotFoundException(String.format("Не найдена категория с id=%d", updateEvent.getCategory())));
-            event.setCategory(category);
-            log.info("Обновлено поле category: {}", category.getName());
-        }
-
-        if (updateEvent.getLocation() != null) {
-            LocationDto locationDto = updateEvent.getLocation();
-            event.setLocation(new Location(locationDto.getLat(), locationDto.getLon()));
-            log.info("Обновлено поле location: lat = {}, lon = {}", locationDto.getLat(), locationDto.getLon());
-        }
-
-        // Проверка на невозможность отмены или изменения состояния события
-        if (State.PUBLISHED.equals(event.getState())) {
-            log.error("Невозможно отменить событие с id = {}: оно уже опубликовано", eventId);
-            throw new ConflictException("Невозможно отменить событие с id = " + eventId + ": оно уже опубликовано.");
-        }
-
-        if (State.REJECTED.equals(event.getState())) {
-            log.error("Невозможно изменить событие с id = {}: оно отменено.", eventId);
-            throw new ConflictException("Событие с id = " + eventId + " отменено и не может быть изменено.");
-        }
-
-        // Обработка изменения состояния события
-        if (updateEvent.getStateAction() != null) {
-            log.info("Обрабатываем изменение состояния события: {}", updateEvent.getStateAction());
-            if (StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
-                event.setState(State.PUBLISHED);
-                event.setPublishedOn(LocalDateTime.now());
-                log.info("Статус события изменен на PUBLISHED.");
-            } else if (StateAdminAction.REJECT_EVENT.equals(updateEvent.getStateAction())) {
-                event.setState(State.REJECTED);
-                log.info("Статус события изменен на REJECTED.");
-            }
-        }
-
-        log.info("Сохраняем обновленное событие...");
-        Event updatedEvent = eventRepository.save(event);
-        log.info("Событие успешно сохранено с новым состоянием: {}", updatedEvent);
-
-        // Преобразуем обновленное событие в DTO и возвращаем
-        EventFullDto updatedEventDto = EventMapper.mapEventToEventFullDto(updatedEvent);
-        log.info("Обновленное событие преобразовано в DTO: {}", updatedEventDto);
-
-        return updatedEventDto;
-    }
-
-
-
-    /*@Transactional
-    @Override
-    public EventFullDto updateByAdmin(Long eventId, UpdateEventAdminRequest updateEvent) {
-        log.info("Начало обработки запроса на обновление события с id = {}", eventId);
-        log.info("Полученные данные для обновления: {}", updateEvent);
-
-        checkEventDate(updateEvent.getEventDate());
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> {
-                    log.error("Событие с id = {} не найдено", eventId);
-                    return new NotFoundException("Событие с id = " + eventId + " не найдено.");
-                });
-
-        log.info("Событие найдено: {}", event);
-
-        if (State.PUBLISHED.equals(event.getState()) && StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
-            log.error("Невозможно опубликовать событие с id = {}: оно уже опубликовано.", eventId);
-            throw new ConflictException("Невозможно опубликовать событие: оно уже опубликовано.");
-        }
-
-        if (updateEvent.getTitle() != null) {
-            event.setTitle(updateEvent.getTitle());
-            log.info("Обновлено поле title: {}", updateEvent.getTitle());
-        }
-
-        if (updateEvent.getAnnotation() != null) {
-            event.setAnnotation(updateEvent.getAnnotation());
-            log.info("Обновлено поле annotation: {}", updateEvent.getAnnotation());
-        }
-
-        if (updateEvent.getDescription() != null) {
-            event.setDescription(updateEvent.getDescription());
-            log.info("Обновлено поле description: {}", updateEvent.getDescription());
-        }
-
-        if (updateEvent.getEventDate() != null) {
-            event.setEventDate(updateEvent.getEventDate());
-            log.info("Обновлено поле eventDate: {}", updateEvent.getEventDate());
-        }
-
-        if (updateEvent.getPaid() != null) {
-            event.setPaid(updateEvent.getPaid());
-            log.info("Обновлено поле paid: {}", updateEvent.getPaid());
-        }
-
-        if (updateEvent.getParticipantLimit() != null) {
-            event.setParticipantLimit(updateEvent.getParticipantLimit());
-            log.info("Обновлено поле participantLimit: {}", updateEvent.getParticipantLimit());
-        }
-
-        if (updateEvent.getRequestModeration() != null) {
-            event.setRequestModeration(updateEvent.getRequestModeration());
-            log.info("Обновлено поле requestModeration: {}", updateEvent.getRequestModeration());
-        }
-
-        if (updateEvent.getCategory() != null) {
-            Category category = categoryRepository.findById(updateEvent.getCategory())
-                    .orElseThrow(() -> new NotFoundException(String.format("Не найдена категория с id=%d", updateEvent.getCategory())));
+                    .orElseThrow(() -> new NotFoundException(String.format("Не найдена категория с id=%d",
+                            updateEvent.getCategory())));
             event.setCategory(category);
             log.info("Обновлено поле category: {}", category.getName());
         }
@@ -318,7 +218,7 @@ public class EventServiceImpl implements EventService {
 
         return updatedEventDto;
     }
-*/
+
     /**
      * Private
      */
@@ -444,7 +344,6 @@ public class EventServiceImpl implements EventService {
             switch (updateEventUserDto.getStateAction()) {
                 case CANCEL_REVIEW:
                     eventToPatch.setState(State.CANCELED);
-                   // eventToPatch.setPaid(false);
                     break;
                 case SEND_TO_REVIEW:
                     eventToPatch.setState(State.PENDING);
@@ -556,7 +455,6 @@ public class EventServiceImpl implements EventService {
     /**
      * Public
      */
-
     @Transactional
     @Override
     public List<EventShortDto> getAllPublic(RequestPublicParamForEvent param) {
@@ -587,6 +485,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public EventFullDto getById(Long id, HttpServletRequest request) {
+
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("Не найдено событие с id = %s", id)));
 
@@ -603,40 +502,50 @@ public class EventServiceImpl implements EventService {
     }
 
     public List<Event> findEventsBySearchParams(EventSearchParams searchParams) {
+        if (searchParams.getRangeStart() != null && searchParams.getRangeEnd() != null) {
+            if (searchParams.getRangeStart().isAfter(searchParams.getRangeEnd())) {
+                throw new ConditionsNotMetException("Диапазон дат неверный: rangeStart не может быть позже rangeEnd");
+            }
+        }
         List<Event> events = eventRepository.findAll();
+
+        log.debug("Изначально получено {} событий", events.size());
 
         if (searchParams.getText() != null && !searchParams.getText().isEmpty()) {
             events = events.stream()
                     .filter(event -> event.getAnnotation().contains(searchParams.getText())
                             || event.getDescription().contains(searchParams.getText()))
                     .collect(Collectors.toList());
+            log.debug("После фильтрации по тексту получено {} событий", events.size());
         }
 
         if (searchParams.getCategories() != null && !searchParams.getCategories().isEmpty()) {
             events = events.stream()
                     .filter(event -> searchParams.getCategories().contains(event.getCategory().getId()))
                     .collect(Collectors.toList());
+            log.debug("После фильтрации по категориям получено {} событий", events.size());
         }
 
         if (searchParams.getPaid() != null) {
             events = events.stream()
                     .filter(event -> event.getPaid().equals(searchParams.getPaid()))
                     .collect(Collectors.toList());
+            log.debug("После фильтрации по оплате получено {} событий", events.size());
         }
 
         if (searchParams.getRangeStart() != null || searchParams.getRangeEnd() != null) {
-            LocalDateTime rangeStart = searchParams.getRangeStart() != null ?
-                    searchParams.getRangeStart() : LocalDateTime.MIN;
-            LocalDateTime rangeEnd = searchParams.getRangeEnd() != null ?
-                    searchParams.getRangeEnd() : LocalDateTime.MAX;
+            LocalDateTime rangeStart = searchParams.getRangeStart() != null ? searchParams.getRangeStart() : LocalDateTime.MIN;
+            LocalDateTime rangeEnd = searchParams.getRangeEnd() != null ? searchParams.getRangeEnd() : LocalDateTime.MAX;
+
             events = events.stream()
                     .filter(event -> event.getEventDate().isAfter(rangeStart) &&
                             event.getEventDate().isBefore(rangeEnd))
                     .collect(Collectors.toList());
+            log.debug("После фильтрации по датам получено {} событий", events.size());
         }
+
         return events;
     }
-
 
     /**
      * Создание пагинации на основе параметров запроса.
@@ -668,8 +577,8 @@ public class EventServiceImpl implements EventService {
      */
     private void checkEventDate(LocalDateTime eventDate) {
         if (eventDate != null && eventDate.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ValidationException("Поле: eventDate. Ошибка: дата и время запланированного мероприятия не могут " +
-                    "быть ранее, чем через 2 часа после текущего момента. Значение: " + eventDate);
+            throw new ValidationException("Поле: eventDate. Ошибка: дата и время запланированного мероприятия " +
+                    "не могут быть ранее, чем через 2 часа после текущего момента. Значение: " + eventDate);
         }
     }
 }
