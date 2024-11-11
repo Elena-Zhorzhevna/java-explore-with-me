@@ -12,7 +12,6 @@ import ru.practicum.ewm.main.model.enums.Status;
 import ru.practicum.ewm.main.service.event.EventService;
 
 import java.util.List;
-import java.util.Set;
 
 
 @Slf4j

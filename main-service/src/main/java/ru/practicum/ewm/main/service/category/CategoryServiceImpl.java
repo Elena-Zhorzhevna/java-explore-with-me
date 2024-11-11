@@ -2,7 +2,6 @@ package ru.practicum.ewm.main.service.category;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -14,18 +13,20 @@ import ru.practicum.ewm.main.exception.NotFoundException;
 import ru.practicum.ewm.main.mapper.CategoryMapper;
 import ru.practicum.ewm.main.model.Category;
 import ru.practicum.ewm.main.repository.CategoryRepository;
+import ru.practicum.ewm.main.repository.EventRepository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
+    private final EventRepository eventRepository;
 
-    public CategoryServiceImpl(CategoryRepository categoryRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository, EventRepository eventRepository) {
         this.categoryRepository = categoryRepository;
+        this.eventRepository = eventRepository;
     }
 
     @Override
@@ -60,11 +61,10 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto create(NewCategoryDto dto) {
         Category category = CategoryMapper.mapToCategory(dto);
 
-    /*    try {
-            category = categoryRepository.save(category);
-        } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(e.getMessage(), e);
-        }*/
+        if (categoryRepository.existsByName(category.getName())) {
+            throw new ConflictException("Категория с таким именем уже существует.");
+        }
+
         CategoryDto savedCategory = CategoryMapper.mapToDto(categoryRepository.save(category));
         log.info("Добавлена категория: {} с id = {}", savedCategory.getName(), savedCategory.getId());
         return savedCategory;
@@ -72,7 +72,14 @@ public class CategoryServiceImpl implements CategoryService {
 
     public CategoryDto update(final CategoryDto dto, final Long catId) {
         final Category category = getCategory(catId);
-        Optional.ofNullable(dto.getName()).ifPresent(category::setName);
+        if (dto.getName() != null && !dto.getName().equals(category.getName())) {
+            if (categoryRepository.existsByName(dto.getName())) {
+                throw new ConflictException("Категория с таким именем уже существует.");
+            }
+            category.setName(dto.getName());
+        }
+
+        //Optional.ofNullable(dto.getName()).ifPresent(category::setName);
         final Category savedCategory = categoryRepository.save(category);
         log.info("Обновлена категория с id = {}: {}", savedCategory.getId(), savedCategory);
         return CategoryMapper.mapToDto(savedCategory);
@@ -81,9 +88,18 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public void delete(Long catId) {
-        CategoryDto categoryDto = CategoryMapper.mapToDto(getCategory(catId));
+        Category category = getCategory(catId);
+        if (isCategoryUsedInOtherObjects(category)) {
+            throw new ConflictException("Невозможно удалить категорию, она используется в событиях");
+        }
+
         categoryRepository.deleteById(catId);
         log.info("Категория с id = {} удалена", catId);
+    }
+
+    private boolean isCategoryUsedInOtherObjects(Category category) {
+        // Проверяем, есть ли хотя бы одно событие, которое использует эту категорию
+        return eventRepository.existsByCategory(category);
     }
 
     private Category getCategory(Long catId) {

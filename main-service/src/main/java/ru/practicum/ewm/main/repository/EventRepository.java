@@ -3,7 +3,9 @@ package ru.practicum.ewm.main.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import ru.practicum.ewm.main.model.Category;
 import ru.practicum.ewm.main.model.Event;
+import ru.practicum.ewm.main.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,4 +28,7 @@ public interface EventRepository extends JpaRepository<Event, Long>, JpaSpecific
     List<Event> findByPaid(Boolean paid);
 
     List<Event> findByEventDateBetween(LocalDateTime start, LocalDateTime end);
+
+    Optional<Event> findByCategoryAndInitiator(Category category, User initiator);
+    boolean existsByCategory(Category category);
 }

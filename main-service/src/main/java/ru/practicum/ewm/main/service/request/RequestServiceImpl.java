@@ -60,29 +60,39 @@ public class RequestServiceImpl implements RequestService {
 
         final Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException(String.format("Не найдено событие с id = %s", eventId)));
+
         final User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(String.format("Не найден пользователь с id = %s", userId)));
 
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
-            throw new ConflictException(String.format("Запрос на участие пользователя с id=%d в событии с id=%d " +
-                    "уже существует.", userId, eventId));
+            throw new ConflictException(String.format("Запрос на участие пользователя с id=%d в событии с id=%d уже " +
+                    "существует.", userId, eventId));
         }
+
         if (userId.equals(event.getInitiator().getId())) {
             throw new ConflictException(String.format("Пользователь с id=%d не должен быть инициатором запроса.",
                     userId));
         }
+
         if (!event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException(String.format("Событие с id=%d не опубликовано.", eventId));
         }
-        if (event.getParticipantLimit() > 0 && event.getParticipantLimit().equals(event.getConfirmedRequests())) {
-            throw new ConflictException(String.format("У события с id=%d достигнут лимит участников. ", eventId));
+
+        if (event.getParticipantLimit() > 0 && event.getConfirmedRequests() >= event.getParticipantLimit()) {
+            throw new ConflictException(String.format("У события с id=%d достигнут лимит участников.", eventId));
         }
+
+        ParticipationRequest participationRequest = RequestMapper.mapToRequest(event, user);
+        participationRequest.setStatus(Status.PENDING);
+
+        participationRequest = requestRepository.save(participationRequest);
+
         if (!event.getRequestModeration()) {
+            participationRequest.setStatus(Status.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         }
-        ParticipationRequest participationRequest = requestRepository.save(RequestMapper.mapToRequest(event, user));
-        participationRequest.setStatus(Status.CONFIRMED);
+
         return RequestMapper.toParticipationRequestDto(participationRequest);
     }
 

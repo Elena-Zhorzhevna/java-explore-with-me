@@ -15,7 +15,6 @@ import ru.practicum.ewm.main.service.event.EventService;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 @Slf4j
 @Validated

@@ -31,10 +31,7 @@ import ru.practicum.ewm.main.repository.RequestRepository;
 import ru.practicum.ewm.main.repository.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -116,6 +113,117 @@ public class EventServiceImpl implements EventService {
         log.info("Начало обработки запроса на обновление события с id = {}", eventId);
         log.info("Полученные данные для обновления: {}", updateEvent);
 
+        // Проверка корректности даты события (если требуется)
+        checkEventDate(updateEvent.getEventDate());
+
+        // Находим событие по id
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> {
+                    log.error("Событие с id = {} не найдено", eventId);
+                    return new NotFoundException("Событие с id = " + eventId + " не найдено.");
+                });
+
+        log.info("Событие найдено: {}", event);
+
+        // Проверка, не пытается ли админ повторно опубликовать событие, которое уже опубликовано
+        if (State.PUBLISHED.equals(event.getState()) && StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
+            log.error("Невозможно опубликовать событие с id = {}: оно уже опубликовано.", eventId);
+            throw new ConflictException("Невозможно опубликовать событие: оно уже опубликовано.");
+        }
+
+        // Обновление полей события, если они присутствуют в запросе
+        if (updateEvent.getTitle() != null) {
+            event.setTitle(updateEvent.getTitle());
+            log.info("Обновлено поле title: {}", updateEvent.getTitle());
+        }
+
+        if (updateEvent.getAnnotation() != null) {
+            event.setAnnotation(updateEvent.getAnnotation());
+            log.info("Обновлено поле annotation: {}", updateEvent.getAnnotation());
+        }
+
+        if (updateEvent.getDescription() != null) {
+            event.setDescription(updateEvent.getDescription());
+            log.info("Обновлено поле description: {}", updateEvent.getDescription());
+        }
+
+        if (updateEvent.getEventDate() != null) {
+            event.setEventDate(updateEvent.getEventDate());
+            log.info("Обновлено поле eventDate: {}", updateEvent.getEventDate());
+        }
+
+        if (updateEvent.getPaid() != null && !State.REJECTED.equals(event.getState())) {
+            // Если событие отклонено, не изменяем поле paid
+            event.setPaid(updateEvent.getPaid());
+            log.info("Обновлено поле paid: {}", updateEvent.getPaid());
+        }
+
+        if (updateEvent.getParticipantLimit() != null) {
+            event.setParticipantLimit(updateEvent.getParticipantLimit());
+            log.info("Обновлено поле participantLimit: {}", updateEvent.getParticipantLimit());
+        }
+
+        if (updateEvent.getRequestModeration() != null) {
+            event.setRequestModeration(updateEvent.getRequestModeration());
+            log.info("Обновлено поле requestModeration: {}", updateEvent.getRequestModeration());
+        }
+
+        if (updateEvent.getCategory() != null) {
+            Category category = categoryRepository.findById(updateEvent.getCategory())
+                    .orElseThrow(() -> new NotFoundException(String.format("Не найдена категория с id=%d", updateEvent.getCategory())));
+            event.setCategory(category);
+            log.info("Обновлено поле category: {}", category.getName());
+        }
+
+        if (updateEvent.getLocation() != null) {
+            LocationDto locationDto = updateEvent.getLocation();
+            event.setLocation(new Location(locationDto.getLat(), locationDto.getLon()));
+            log.info("Обновлено поле location: lat = {}, lon = {}", locationDto.getLat(), locationDto.getLon());
+        }
+
+        // Проверка на невозможность отмены или изменения состояния события
+        if (State.PUBLISHED.equals(event.getState())) {
+            log.error("Невозможно отменить событие с id = {}: оно уже опубликовано", eventId);
+            throw new ConflictException("Невозможно отменить событие с id = " + eventId + ": оно уже опубликовано.");
+        }
+
+        if (State.REJECTED.equals(event.getState())) {
+            log.error("Невозможно изменить событие с id = {}: оно отменено.", eventId);
+            throw new ConflictException("Событие с id = " + eventId + " отменено и не может быть изменено.");
+        }
+
+        // Обработка изменения состояния события
+        if (updateEvent.getStateAction() != null) {
+            log.info("Обрабатываем изменение состояния события: {}", updateEvent.getStateAction());
+            if (StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
+                event.setState(State.PUBLISHED);
+                event.setPublishedOn(LocalDateTime.now());
+                log.info("Статус события изменен на PUBLISHED.");
+            } else if (StateAdminAction.REJECT_EVENT.equals(updateEvent.getStateAction())) {
+                event.setState(State.REJECTED);
+                log.info("Статус события изменен на REJECTED.");
+            }
+        }
+
+        log.info("Сохраняем обновленное событие...");
+        Event updatedEvent = eventRepository.save(event);
+        log.info("Событие успешно сохранено с новым состоянием: {}", updatedEvent);
+
+        // Преобразуем обновленное событие в DTO и возвращаем
+        EventFullDto updatedEventDto = EventMapper.mapEventToEventFullDto(updatedEvent);
+        log.info("Обновленное событие преобразовано в DTO: {}", updatedEventDto);
+
+        return updatedEventDto;
+    }
+
+
+
+    /*@Transactional
+    @Override
+    public EventFullDto updateByAdmin(Long eventId, UpdateEventAdminRequest updateEvent) {
+        log.info("Начало обработки запроса на обновление события с id = {}", eventId);
+        log.info("Полученные данные для обновления: {}", updateEvent);
+
         checkEventDate(updateEvent.getEventDate());
 
         Event event = eventRepository.findById(eventId)
@@ -125,6 +233,11 @@ public class EventServiceImpl implements EventService {
                 });
 
         log.info("Событие найдено: {}", event);
+
+        if (State.PUBLISHED.equals(event.getState()) && StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
+            log.error("Невозможно опубликовать событие с id = {}: оно уже опубликовано.", eventId);
+            throw new ConflictException("Невозможно опубликовать событие: оно уже опубликовано.");
+        }
 
         if (updateEvent.getTitle() != null) {
             event.setTitle(updateEvent.getTitle());
@@ -174,6 +287,16 @@ public class EventServiceImpl implements EventService {
             log.info("Обновлено поле location: lat = {}, lon = {}", locationDto.getLat(), locationDto.getLon());
         }
 
+        if (State.PUBLISHED.equals(event.getState())) {
+            log.error("Невозможно отменить событие с id = {}: оно уже опубликовано", eventId);
+            throw new ConflictException("Невозможно отменить событие с id = " + eventId + ": оно уже опубликовано.");
+        }
+
+        if (State.REJECTED.equals(event.getState())) {
+            log.error("Невозможно изменить событие с id = {}: оно отменено.", eventId);
+            throw new ConflictException("Событие с id = " + eventId + " отменено и не может быть изменено.");
+        }
+
         if (updateEvent.getStateAction() != null) {
             log.info("Обрабатываем изменение состояния события: {}", updateEvent.getStateAction());
             if (StateAdminAction.PUBLISH_EVENT.equals(updateEvent.getStateAction())) {
@@ -195,7 +318,7 @@ public class EventServiceImpl implements EventService {
 
         return updatedEventDto;
     }
-
+*/
     /**
      * Private
      */
@@ -262,6 +385,7 @@ public class EventServiceImpl implements EventService {
         return EventMapper.mapEventToEventFullDto(newEvent);
     }
 
+
     @Transactional
     @Override
     public EventFullDto update(Long userId, Long eventId, UpdateEventUserRequest updateEventUserDto) {
@@ -320,7 +444,7 @@ public class EventServiceImpl implements EventService {
             switch (updateEventUserDto.getStateAction()) {
                 case CANCEL_REVIEW:
                     eventToPatch.setState(State.CANCELED);
-                    eventToPatch.setPaid(false);
+                   // eventToPatch.setPaid(false);
                     break;
                 case SEND_TO_REVIEW:
                     eventToPatch.setState(State.PENDING);
@@ -333,6 +457,7 @@ public class EventServiceImpl implements EventService {
         log.info("Обновлено событие: {}", updatedEvent.getTitle());
         return EventMapper.mapEventToEventFullDto(updatedEvent);
     }
+
 
     @Transactional
     @Override
@@ -512,73 +637,6 @@ public class EventServiceImpl implements EventService {
         return events;
     }
 
-    /**
-     * Вспомогательные методы.
-     */
-   /* private <T> void copyNonNullProperties(T source, Event target) {
-        Field[] fields = source.getClass().getDeclaredFields();
-
-        for (Field field : fields) {
-            try {
-                field.setAccessible(true);  // Делаем поле доступным
-                Object value = field.get(source);  // Получаем значение поля
-
-                log.info("Копируем поле: {} = {}", field.getName(), value);
-
-                // Если поле не null, копируем его в целевой объект
-                if (value != null) {
-                    switch (field.getName()) {
-                        case "title":
-                            target.setTitle((String) value);
-                            break;
-                        case "annotation":
-                            log.info("Копирование аннотации: {}", value);
-                            target.setAnnotation((String) value);
-                            break;
-                        case "description":
-                            target.setDescription((String) value);
-                            break;
-                        case "eventDate":
-                            target.setEventDate((LocalDateTime) value);
-                            break;
-                        case "paid":
-                            target.setPaid((Boolean) value);
-                            break;
-                        case "participantLimit":
-                            target.setParticipantLimit((Long) value);
-                            break;
-                        case "requestModeration":
-                            target.setRequestModeration((Boolean) value);
-                            break;
-                        case "category":
-                            // Копирование категории, если она не null
-                            if (value instanceof Long) {
-                                // Если это ID категории (например, при обновлении через DTO), то находим категорию по ID
-                                Long categoryId = (Long) value;
-                                Category category = categoryRepository.findById(categoryId)
-                                        .orElseThrow(() -> new NotFoundException("Категория с id = " + categoryId + " не найдена."));
-                                target.setCategory(category);
-                            } else if (value instanceof Category) {
-                                // Если это сам объект Category, просто копируем
-                                target.setCategory((Category) value);
-                            }
-                            break;
-                        case "location":
-                            // Копирование локации
-                            if (value instanceof LocationDto) {
-                                LocationDto locationDto = (LocationDto) value;
-                                target.setLocation(new Location(locationDto.getLat(), locationDto.getLon()));
-                            }
-                            break;
-
-                        default:
-                            break;
-                    }
-                }
-            } catch (IllegalAccessException e) {
-                log.error("Ошибка при копировании поля: " + field.getName(), e);
-            }
-        }*/
 
     /**
      * Создание пагинации на основе параметров запроса.
