@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,10 +43,8 @@ public class StatsController {
     @GetMapping("/stats")
     @ResponseStatus(HttpStatus.OK)
     public List<StatDto> stats(
-            @RequestParam
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String start,
-            @RequestParam
-            @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") String end,
+            @RequestParam(required = false) String start,
+            @RequestParam(required = false) String end,
             @RequestParam(required = false) List<String> uris,
             @RequestParam(defaultValue = "false") Boolean unique,
             HttpServletRequest request) {

@@ -12,6 +12,9 @@ import org.springframework.web.client.RestClientException;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 /**
@@ -57,6 +60,7 @@ public class StatsClientImpl implements StatsClient {
      */
     @Override
     public List<StatDto> getStats(String start, String end, List<String> uris, boolean unique) {
+
         log.debug("Отправка GET-запроса на сервер статистики для uris = {}", uris);
         try {
             return restClient.get()

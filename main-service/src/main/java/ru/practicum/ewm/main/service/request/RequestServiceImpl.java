@@ -55,7 +55,6 @@ public class RequestServiceImpl implements RequestService {
      * @param eventId Идентификатор события.
      * @return Добавленный запрос в формате Дто.
      */
-
     @Override
     @Transactional
     public ParticipationRequestDto create(Long userId, Long eventId) {
@@ -67,13 +66,11 @@ public class RequestServiceImpl implements RequestService {
                 .orElseThrow(() -> new NotFoundException(String.format("Не найден пользователь с id = %s", userId)));
 
         if (requestRepository.existsByRequesterIdAndEventId(userId, eventId)) {
-            throw new ConflictException(String.format("Запрос на участие пользователя с id=%d в событии с id=%d уже " +
-                    "существует.", userId, eventId));
+            throw new ConflictException(String.format("Запрос на участие пользователя с id=%d в событии с id=%d уже существует.", userId, eventId));
         }
 
         if (userId.equals(event.getInitiator().getId())) {
-            throw new ConflictException(String.format("Пользователь с id=%d не должен быть инициатором запроса.",
-                    userId));
+            throw new ConflictException(String.format("Пользователь с id=%d не должен быть инициатором запроса.", userId));
         }
 
         if (!event.getState().equals(State.PUBLISHED)) {
@@ -86,17 +83,19 @@ public class RequestServiceImpl implements RequestService {
 
         ParticipationRequest participationRequest = RequestMapper.mapToRequest(event, user);
         participationRequest.setStatus(Status.PENDING);
-
         participationRequest = requestRepository.save(participationRequest);
 
+        // Логика автоматического подтверждения запроса
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             participationRequest.setStatus(Status.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
+            requestRepository.save(participationRequest);
         }
 
         return RequestMapper.toParticipationRequestDto(participationRequest);
     }
+
 
     /**
      * Отмена своего запроса на участие в событии.
@@ -114,6 +113,9 @@ public class RequestServiceImpl implements RequestService {
             throw new NotFoundException(String.format("Запрос на участие с id=%d " +
                     "и id пользователя =%d не найден.", requestId, userId));
         }
+        Event event = request.getEvent();
+        event.setConfirmedRequests(event.getConfirmedRequests() - 1);
+        eventRepository.save(event);
         request.setStatus(Status.CANCELED);
         return RequestMapper.toParticipationRequestDto(requestRepository.save(request));
     }

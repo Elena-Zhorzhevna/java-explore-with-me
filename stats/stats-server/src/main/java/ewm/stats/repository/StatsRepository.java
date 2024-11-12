@@ -23,7 +23,7 @@ public interface StatsRepository extends JpaRepository<ParamHit, Long> {
             group by h.app, h.uri
             order by count(h.ip) desc
             """)
-    List<StatDto> getHits(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    List<StatDto> getHits(@Param(value = "start") LocalDateTime start, @Param(value = "end") LocalDateTime end);
 
     /**
      * Получить статистику для заданных URI в заданном диапазоне времени.
@@ -34,8 +34,8 @@ public interface StatsRepository extends JpaRepository<ParamHit, Long> {
             where h.uri in :uris and h.timestamp between :start and :end
             group by h.app, h.uri
             order by count(h.ip) desc""")
-    List<StatDto> getHitsByUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
-                                @Param("uris") List<String> uris);
+    List<StatDto> getHitsByUris(@Param(value = "start") LocalDateTime start, @Param(value = "end") LocalDateTime end,
+                                @Param(value = "uris") List<String> uris);
 
     /**
      * Получить статистику, учитывая только уникальные посещения (только с уникальным ip), для всех URI
@@ -48,7 +48,7 @@ public interface StatsRepository extends JpaRepository<ParamHit, Long> {
             group by h.app, h.uri
             order by count(distinct(h.ip)) desc
             """)
-    List<StatDto> getUniqueHits(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
+    List<StatDto> getUniqueHits(@Param(value = "start") LocalDateTime start, @Param(value = "end") LocalDateTime end);
 
     /**
      * Получить статистику, учитывая только уникальные посещения (только с уникальным ip),
@@ -60,6 +60,6 @@ public interface StatsRepository extends JpaRepository<ParamHit, Long> {
             where h.uri in :uris and h.timestamp between :start and :end
             group by h.app, h.uri
             order by count(distinct(h.ip)) desc""")
-    List<StatDto> getUniqueHitsByUris(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end,
-                                      @Param("uris") List<String> uris);
+    List<StatDto> getUniqueHitsByUris(@Param(value = "start") LocalDateTime start, @Param(value = "end") LocalDateTime end,
+                                      @Param(value = "uris") List<String> uris);
 }

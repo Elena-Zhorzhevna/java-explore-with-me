@@ -10,18 +10,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.practicum.ewm.main.model.enums.Status.CONFIRMED;
-import static ru.practicum.ewm.main.model.enums.Status.PENDING;
-
 public class RequestMapper {
-/*    public static ParticipationRequest mapToRequest(Event event, User requester) {
-        return ParticipationRequest.builder()
-                .requester(requester)
-                .event(event)
-                .created(LocalDateTime.now())
-                .status(event.getRequestModeration() ? PENDING : CONFIRMED)
-                .build();
-    }*/
+
 public static ParticipationRequest mapToRequest(Event event, User requester) {
     Status status = event.getParticipantLimit() == 0 || !event.getRequestModeration() ? Status.CONFIRMED : Status.PENDING;
 
@@ -29,7 +19,7 @@ public static ParticipationRequest mapToRequest(Event event, User requester) {
             .requester(requester)
             .event(event)
             .created(LocalDateTime.now())
-            .status(status) // Устанавливаем статус в зависимости от лимита участников и модерации
+            .status(status)
             .build();
 }
 

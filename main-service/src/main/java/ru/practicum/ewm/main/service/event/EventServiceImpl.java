@@ -26,8 +26,7 @@ import ru.practicum.ewm.main.model.*;
 
 import ru.practicum.ewm.main.model.enums.State;
 import ru.practicum.ewm.main.model.enums.StateAdminAction;
-import ru.practicum.ewm.main.model.enums.StateUserAction;
-import ru.practicum.ewm.main.model.enums.Status;
+
 import ru.practicum.ewm.main.repository.CategoryRepository;
 import ru.practicum.ewm.main.repository.EventRepository;
 import ru.practicum.ewm.main.repository.RequestRepository;
@@ -443,7 +442,7 @@ public class EventServiceImpl implements EventService {
                         .map(RequestMapper::toParticipationRequestDto)
                         .collect(Collectors.toList());
 
-                event.setConfirmedRequests(participantLimit);
+                event.setConfirmedRequests(confirmedRequests.size());
             }
         }
         eventRepository.save(event);
@@ -550,14 +549,14 @@ public class EventServiceImpl implements EventService {
     /**
      * Создание пагинации на основе параметров запроса.
      */
-    private Pageable createPageable(String sort, int from, int size) {
+ /*   private Pageable createPageable(String sort, int from, int size) {
         if (sort == null || sort.equalsIgnoreCase("EVENT_DATE")) {
             return PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "eventDate"));
         } else if (sort.equalsIgnoreCase("VIEWS")) {
             return PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "views"));
         }
         return PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "eventDate"));
-    }
+    }*/
 
     /**
      * Сохранение статистики по запросу.
