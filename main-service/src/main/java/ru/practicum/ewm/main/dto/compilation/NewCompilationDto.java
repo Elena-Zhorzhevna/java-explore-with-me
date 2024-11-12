@@ -18,7 +18,7 @@ public class NewCompilationDto {
      * Заголовок подборки.
      */
     @NotBlank
-    @Size(min = 1,max = 50)
+    @Size(min = 1, max = 50)
     private String title;
     /**
      * Закреплена ли подборка на главной странице сайта.
@@ -27,5 +27,6 @@ public class NewCompilationDto {
     /**
      * Список идентификаторов событий входящих в подборку.
      */
+    @Builder.Default
     private Set<Long> events = new HashSet<>();
 }

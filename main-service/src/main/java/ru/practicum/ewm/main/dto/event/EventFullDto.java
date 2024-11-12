@@ -73,11 +73,13 @@ public class EventFullDto {
      * Нужно ли оплачивать участие.
      */
     @NotBlank
+    @Builder.Default
     private Boolean paid = false;
 
     /**
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения.
      */
+    @Builder.Default
     private Long participantLimit = 0L;
 
     /**
@@ -89,6 +91,7 @@ public class EventFullDto {
     /**
      * Нужна ли пре-модерация заявок на участие.
      */
+    @Builder.Default
     private Boolean requestModeration = true;
 
     /**

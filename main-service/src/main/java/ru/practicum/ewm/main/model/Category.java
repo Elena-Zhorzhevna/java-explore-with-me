@@ -1,7 +1,6 @@
 package ru.practicum.ewm.main.model;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 

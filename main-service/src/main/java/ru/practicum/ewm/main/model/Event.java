@@ -92,6 +92,7 @@ public class Event {
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения.
      */
     @Column(name = "participant_limit")
+    @Builder.Default
     private Long participantLimit = 0L;
 
     /**
@@ -105,6 +106,7 @@ public class Event {
      * Нужна ли пре-модерация заявок на участие.
      */
     @Column(name = "request_moderation")
+    @Builder.Default
     private Boolean requestModeration = true;
 
     /**

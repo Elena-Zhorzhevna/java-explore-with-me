@@ -17,6 +17,7 @@ public class PublicCompilationController {
     public PublicCompilationController(CompilationService compilationService) {
         this.compilationService = compilationService;
     }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CompilationDto> getAll(@RequestParam(required = false) Boolean pinned,

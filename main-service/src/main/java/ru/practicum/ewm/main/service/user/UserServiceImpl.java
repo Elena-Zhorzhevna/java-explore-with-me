@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
         final User user = UserMapper.mapToUser(newUserRequest);
         log.info("Добавлен пользователь с эл.почтой: {}", user.getEmail());
         return UserMapper.mapToUserDto(userRepository.save(user));
-
     }
 
     /**

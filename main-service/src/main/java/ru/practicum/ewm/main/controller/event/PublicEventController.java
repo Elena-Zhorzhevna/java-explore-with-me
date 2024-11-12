@@ -72,4 +72,3 @@ public class PublicEventController {
         return eventService.getById(id, request);
     }
 }
-

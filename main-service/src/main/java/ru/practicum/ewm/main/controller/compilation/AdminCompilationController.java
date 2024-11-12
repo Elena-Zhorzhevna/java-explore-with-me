@@ -20,6 +20,7 @@ public class AdminCompilationController {
     public AdminCompilationController(CompilationService compilationService) {
         this.compilationService = compilationService;
     }
+
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public CompilationDto save(@RequestBody @Valid NewCompilationDto newCompilationDto) {

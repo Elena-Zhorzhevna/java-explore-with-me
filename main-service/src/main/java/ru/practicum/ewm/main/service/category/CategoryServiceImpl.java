@@ -64,7 +64,6 @@ public class CategoryServiceImpl implements CategoryService {
         if (categoryRepository.existsByName(category.getName())) {
             throw new ConflictException("Категория с таким именем уже существует.");
         }
-
         CategoryDto savedCategory = CategoryMapper.mapToDto(categoryRepository.save(category));
         log.info("Добавлена категория: {} с id = {}", savedCategory.getName(), savedCategory.getId());
         return savedCategory;
@@ -78,8 +77,6 @@ public class CategoryServiceImpl implements CategoryService {
             }
             category.setName(dto.getName());
         }
-
-        //Optional.ofNullable(dto.getName()).ifPresent(category::setName);
         final Category savedCategory = categoryRepository.save(category);
         log.info("Обновлена категория с id = {}: {}", savedCategory.getId(), savedCategory);
         return CategoryMapper.mapToDto(savedCategory);
@@ -92,13 +89,14 @@ public class CategoryServiceImpl implements CategoryService {
         if (isCategoryUsedInOtherObjects(category)) {
             throw new ConflictException("Невозможно удалить категорию, она используется в событиях");
         }
-
         categoryRepository.deleteById(catId);
         log.info("Категория с id = {} удалена", catId);
     }
 
+    /**
+     * Проверка, использует ли категорию хотя бы одно событие.
+     */
     private boolean isCategoryUsedInOtherObjects(Category category) {
-        // Проверяем, есть ли хотя бы одно событие, которое использует эту категорию
         return eventRepository.existsByCategory(category);
     }
 
@@ -107,7 +105,6 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new NotFoundException("Категория с id = " + catId + " не найдена!"));
         return category;
     }
-
 
     private void validatePagesRequest(Integer pageNum, Integer pageSize) {
         if (pageNum < 0 || pageSize <= 0) {

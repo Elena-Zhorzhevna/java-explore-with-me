@@ -11,7 +11,6 @@ import ru.practicum.ewm.main.model.enums.State;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EventMapper {

@@ -17,7 +17,7 @@ public class CategoryDto {
     private String name;
 
     @JsonCreator
-    public CategoryDto(@JsonProperty("id")Long id, @JsonProperty("name") String name) {
+    public CategoryDto(@JsonProperty("id") Long id, @JsonProperty("name") String name) {
         this.id = id;
         this.name = name;
     }

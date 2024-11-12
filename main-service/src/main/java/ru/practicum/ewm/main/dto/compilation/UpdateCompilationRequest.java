@@ -12,7 +12,9 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class UpdateCompilationRequest {
+    @Builder.Default
     private Set<Long> events = new HashSet<>();
+    @Builder.Default
     private Boolean pinned = false;
     @Size(min = 1, max = 50)
     private String title;

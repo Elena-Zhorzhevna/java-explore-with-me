@@ -1,13 +1,11 @@
 package ru.practicum.ewm.main.dto.event;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.boot.context.properties.bind.DefaultValue;
 import ru.practicum.ewm.main.model.Location;
 
 import java.time.LocalDateTime;
@@ -53,17 +51,20 @@ public class NewEventDto {
     /**
      * Нужно ли оплачивать участие.
      */
+    @Builder.Default
     private Boolean paid = false;
 
     /**
      * Ограничение на количество участников. Значение 0 - означает отсутствие ограничения.
      */
     @PositiveOrZero
+    @Builder.Default
     private Long participantLimit = 0L;
 
     /**
      * Нужна ли пре-модерация заявок на участие.
      */
+    @Builder.Default
     private Boolean requestModeration = true;
 
     /**
