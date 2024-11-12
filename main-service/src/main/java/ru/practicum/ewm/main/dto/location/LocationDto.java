@@ -9,8 +9,14 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class LocationDto {
+    /**
+     * Широта места проведения события.
+     */
     @NotNull
     private Float lat;
+    /**
+     * Долгота места проведения события.
+     */
     @NotNull
     private Float lon;
 }

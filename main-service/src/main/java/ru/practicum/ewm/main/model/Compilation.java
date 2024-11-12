@@ -18,11 +18,17 @@ import java.util.Set;
 @Table(name = "compilations")
 public class Compilation {
 
+    /**
+     * Идентификатор подборки событий.
+     */
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Заголовок подборки.
+     */
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -30,8 +36,13 @@ public class Compilation {
      * Закреплена ли подборка на главной странице сайта.
      */
     @Column(name = "pinned")
+    @Builder.Default
     private boolean pinned = false;
 
+    /**
+     * Список событий, входящих в подборку.
+     */
+    @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "event_compilation",
             joinColumns = @JoinColumn(name = "compilation_id"),

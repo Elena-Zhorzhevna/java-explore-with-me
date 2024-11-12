@@ -18,6 +18,14 @@ public class PublicCompilationController {
         this.compilationService = compilationService;
     }
 
+    /**
+     * Получение подборок событий.
+     *
+     * @param pinned Закрепленные/не закрепленные подборки.
+     * @param from   Количество элементов, которые нужно пропустить для формирования текущего набора.
+     * @param size   Количество элементов в наборе.
+     * @return Список подборок в формате ДТО.
+     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<CompilationDto> getAll(@RequestParam(required = false) Boolean pinned,
@@ -27,6 +35,12 @@ public class PublicCompilationController {
         return compilationService.getAllPublic(pinned, from, size);
     }
 
+    /**
+     * Получение подборки событий по идентификатору.
+     *
+     * @param comId Идентификатор подборки событий.
+     * @return Подборка событий в формате ДТО.
+     */
     @GetMapping("/{comId}")
     @ResponseStatus(HttpStatus.OK)
     public CompilationDto get(@PathVariable Long comId) {

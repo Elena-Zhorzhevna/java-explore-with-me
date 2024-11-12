@@ -33,7 +33,10 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
     /**
-     * Admin
+     * Добавление новой подборки событий.
+     *
+     * @param newCompilationDto Добавляемая подборка событий в формате ДТО.
+     * @return Добавленная подборка событий в формате ДТО.
      */
     @Transactional
     @Override
@@ -49,6 +52,11 @@ public class CompilationServiceImpl implements CompilationService {
         return CompilationMapper.mapToDto(compilation);
     }
 
+    /**
+     * Удаление подборки событий.
+     *
+     * @param compId Идентификатор подборки событий.
+     */
     @Override
     @Transactional
     public void delete(Long compId) {
@@ -58,6 +66,13 @@ public class CompilationServiceImpl implements CompilationService {
         }
     }
 
+    /**
+     * Обновление информации о подборке событий.
+     *
+     * @param compId                   Идентификатор подборки.
+     * @param updateCompilationRequest Данные для обновления подборки.
+     * @return Обновленная подборка событий в формате ДТО.
+     */
     @Override
     @Transactional
     public CompilationDto update(Long compId, UpdateCompilationRequest updateCompilationRequest) {
@@ -86,6 +101,14 @@ public class CompilationServiceImpl implements CompilationService {
         return CompilationMapper.mapToDto(compilationToUpdate);
     }
 
+    /**
+     * Получение подборок событий.
+     *
+     * @param pinned Закрепленные/не закрепленные подборки.
+     * @param from   Количество элементов, которые нужно пропустить для формирования текущего набора.
+     * @param size   Количество элементов в наборе.
+     * @return Список подборок в формате ДТО.
+     */
     @Override
     public List<CompilationDto> getAllPublic(Boolean pinned, Integer from, Integer size) {
 
@@ -110,7 +133,12 @@ public class CompilationServiceImpl implements CompilationService {
         return CompilationMapper.mapToDtoList(compilations);
     }
 
-
+    /**
+     * Получение подборки событий по идентификатору.
+     *
+     * @param comId Идентификатор подборки событий.
+     * @return Подборка событий в формате ДТО.
+     */
     @Override
     public CompilationDto getById(Long comId) {
         final Compilation compilation = compilationRepository.findById(comId)

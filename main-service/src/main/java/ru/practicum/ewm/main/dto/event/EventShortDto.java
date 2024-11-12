@@ -56,6 +56,7 @@ public class EventShortDto {
      * Нужно ли оплачивать участие.
      */
     @NotBlank
+    @Builder.Default
     private Boolean paid = false;
 
     /**

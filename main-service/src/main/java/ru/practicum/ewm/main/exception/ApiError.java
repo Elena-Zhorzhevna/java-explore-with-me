@@ -2,6 +2,9 @@ package ru.practicum.ewm.main.exception;
 
 import lombok.Getter;
 
+/**
+ * Сведения об ошибке.
+ */
 @Getter
 public class ApiError {
     private String status;

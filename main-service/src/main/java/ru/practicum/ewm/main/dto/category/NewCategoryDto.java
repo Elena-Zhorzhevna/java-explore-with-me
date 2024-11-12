@@ -10,6 +10,9 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class NewCategoryDto {
+    /**
+     * Название категории.
+     */
     @NotBlank
     @Size(min = 1, max = 50)
     private String name;

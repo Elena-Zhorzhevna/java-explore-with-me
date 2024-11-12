@@ -18,6 +18,12 @@ public class PrivateRequestController {
         this.requestService = requestService;
     }
 
+    /**
+     * Получение информации о заявках текущего пользователя на участие в событиях.
+     *
+     * @param userId Идентификатор пользователя.
+     * @return Список заявок в формате ДТО.
+     */
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public List<ParticipationRequestDto> getRequests(@PathVariable Long userId) {
@@ -25,6 +31,13 @@ public class PrivateRequestController {
         return requestService.getRequests(userId);
     }
 
+    /**
+     * Добавление запроса от текущего пользователя на участие в событии.
+     *
+     * @param userId  Идентификатор пользователя.
+     * @param eventId Идентификатор события.
+     * @return Добавленный запрос.
+     */
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public ParticipationRequestDto create(@PathVariable Long userId,
@@ -33,6 +46,13 @@ public class PrivateRequestController {
         return requestService.create(userId, eventId);
     }
 
+    /**
+     * Отмена своего запроса на участие в событии.
+     *
+     * @param userId     Идентификатор пользователя.
+     * @param requestsId Идентификатор запроса.
+     * @return Отмененный запрос.
+     */
     @PatchMapping("/{requestsId}/cancel")
     public ParticipationRequestDto update(@PathVariable Long userId, @PathVariable Long requestsId) {
         log.info("Получен PATCH-запрос /users/{}/requests/{requestsId}/cancel" +

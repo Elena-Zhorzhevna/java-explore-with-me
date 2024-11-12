@@ -66,6 +66,13 @@ public class EventServiceImpl implements EventService {
     /**
      * Admin
      */
+
+    /**
+     * Поиск событий.
+     *
+     * @param param Параметры поиска событий.
+     * @return Список событий.
+     */
     @Override
     public List<EventFullDto> getAll(RequestParamForEvent param) {
         if (param.getRangeStart() != null && param.getRangeEnd() != null) {
@@ -115,6 +122,13 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Редактирование данных любого события и его статуса(отклонение/публикация) администратором.
+     *
+     * @param eventId     Идентификатор пользователя.
+     * @param updateEvent Данные для изменения информации о событии.
+     * @return Событие с обновленными данными в формате ДТО.
+     */
     @Transactional
     @Override
     public EventFullDto updateByAdmin(Long eventId, UpdateEventAdminRequest updateEvent) {
@@ -221,6 +235,15 @@ public class EventServiceImpl implements EventService {
     /**
      * Private
      */
+
+    /**
+     * Получает список кратких событий для указанного пользователя с учетом пагинации.
+     *
+     * @param userId Идентификатор пользователя, для которого запрашиваются события.
+     * @param page   Номер страницы (начиная с 0).
+     * @param size   Количество событий на одной странице.
+     * @return Список событий.
+     */
     @Override
     public List<EventShortDto> getAllPrivate(Long userId, Integer page, Integer size) {
 
@@ -233,7 +256,13 @@ public class EventServiceImpl implements EventService {
         return eventShorts;
     }
 
-
+    /**
+     * Получение полной информации о событии, добавленном текущим пользователем.
+     *
+     * @param userId  Идентификатор пользователя.
+     * @param eventId Идентификатор события.
+     * @return Полная информация о событии.
+     */
     @Override
     public EventFullDto get(Long userId, Long eventId) {
         Event event = eventRepository.findByIdAndInitiatorId(eventId, userId)
@@ -243,6 +272,13 @@ public class EventServiceImpl implements EventService {
         return EventMapper.mapEventToEventFullDto(event);
     }
 
+    /**
+     * Получение информации о запросах на участие в событии текущего пользователя.
+     *
+     * @param userId  Идентификатор пользователя.
+     * @param eventId Идентификатор события.
+     * @return Список запросов.
+     */
     @Override
     public List<ParticipationRequestDto> getRequests(Long userId, Long eventId) {
         if (!eventRepository.existsByIdAndInitiatorId(eventId, userId)) {
@@ -252,6 +288,13 @@ public class EventServiceImpl implements EventService {
         return RequestMapper.toDtoList(requestRepository.findAllByEventId(eventId));
     }
 
+    /**
+     * Добавление нового события.
+     *
+     * @param userId   Идентификатор пользователя.
+     * @param eventDto Добавляемое событие.
+     * @return Добавленное событие в формате ДТО.
+     */
     @Transactional
     @Override
     public EventFullDto create(Long userId, NewEventDto eventDto) {
@@ -284,7 +327,14 @@ public class EventServiceImpl implements EventService {
         return EventMapper.mapEventToEventFullDto(newEvent);
     }
 
-
+    /**
+     * Изменение события, добавленного текущим пользователем.
+     *
+     * @param userId             Идентификатор пользователя.
+     * @param eventId            Идентификатор события.
+     * @param updateEventUserDto Данные для изменения информации о событии.
+     * @return Событие с обновленной информацией.
+     */
     @Transactional
     @Override
     public EventFullDto update(Long userId, Long eventId, UpdateEventUserRequest updateEventUserDto) {
@@ -356,7 +406,14 @@ public class EventServiceImpl implements EventService {
         return EventMapper.mapEventToEventFullDto(updatedEvent);
     }
 
-
+    /**
+     * Изменение статуса(подтверждена/отменена) заявок на участие в событии текущего пользователя.
+     *
+     * @param userId  Идентификатор пользователя.
+     * @param eventId Идентификатор события.
+     * @param request Новый статус для заявок на участие в событии текущего пользователя.
+     * @return Заявка на участие с обновленным статусом.
+     */
     @Transactional
     @Override
     public EventRequestStatusUpdateResult updateRequestStatus(Long userId, Long eventId,
@@ -454,6 +511,13 @@ public class EventServiceImpl implements EventService {
     /**
      * Public
      */
+
+    /**
+     * Получает список кратких публичных событий по заданным параметрам поиска с пагинацией.
+     *
+     * @param param Параметры для поиска и пагинации.
+     * @return Список событий.
+     */
     @Transactional
     @Override
     public List<EventShortDto> getAllPublic(RequestPublicParamForEvent param) {
@@ -482,6 +546,12 @@ public class EventServiceImpl implements EventService {
         return eventShortsList;
     }
 
+    /**
+     * Получение подробной информации об опубликованном событии по его идентификатору.
+     *
+     * @param id Идентификатор события.
+     * @return Подробная информация о событии.
+     */
     @Override
     public EventFullDto getById(Long id, HttpServletRequest request) {
 
@@ -500,6 +570,12 @@ public class EventServiceImpl implements EventService {
         return EventMapper.mapEventToEventFullDto(event);
     }
 
+    /**
+     * Поиск событий по заданным параметрам поиска.
+     *
+     * @param searchParams Параметры поиска.
+     * @return Список событий.
+     */
     public List<Event> findEventsBySearchParams(EventSearchParams searchParams) {
         if (searchParams.getRangeStart() != null && searchParams.getRangeEnd() != null) {
             if (searchParams.getRangeStart().isAfter(searchParams.getRangeEnd())) {
@@ -545,18 +621,6 @@ public class EventServiceImpl implements EventService {
 
         return events;
     }
-
-    /**
-     * Создание пагинации на основе параметров запроса.
-     */
- /*   private Pageable createPageable(String sort, int from, int size) {
-        if (sort == null || sort.equalsIgnoreCase("EVENT_DATE")) {
-            return PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "eventDate"));
-        } else if (sort.equalsIgnoreCase("VIEWS")) {
-            return PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "views"));
-        }
-        return PageRequest.of(from / size, size, Sort.by(Sort.Direction.ASC, "eventDate"));
-    }*/
 
     /**
      * Сохранение статистики по запросу.

@@ -22,6 +22,13 @@ public class PublicCategoryController {
         this.categoryService = categoryService;
     }
 
+    /**
+     * Получение категорий.
+     *
+     * @param from Количество категорий, которые нужно пропустить для формирования текущего набора.
+     * @param size Количество категорий в наборе.
+     * @return Список категорий.
+     */
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public List<CategoryDto> getAll(@RequestParam(defaultValue = "0") int from,
@@ -30,6 +37,12 @@ public class PublicCategoryController {
         return categoryService.getAll(from, size);
     }
 
+    /**
+     * Получение информации о категории по ее идентификатору.
+     *
+     * @param catId Идентификатор категории.
+     * @return Категория в формате ДТО.
+     */
     @GetMapping("/{catId}")
     @ResponseStatus(value = HttpStatus.OK)
     public CategoryDto get(@PathVariable Long catId) {

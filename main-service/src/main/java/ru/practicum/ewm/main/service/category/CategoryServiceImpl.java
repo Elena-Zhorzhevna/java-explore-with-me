@@ -29,6 +29,13 @@ public class CategoryServiceImpl implements CategoryService {
         this.eventRepository = eventRepository;
     }
 
+    /**
+     * Получение категорий.
+     *
+     * @param from Количество категорий, которые нужно пропустить для формирования текущего набора.
+     * @param size Количество категорий в наборе.
+     * @return Список категорий.
+     */
     @Override
     public List<CategoryDto> getAll(Integer from, Integer size) {
         if (from == null || size == null) {
@@ -45,6 +52,12 @@ public class CategoryServiceImpl implements CategoryService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Получение информации о категории по ее идентификатору.
+     *
+     * @param catId Идентификатор категории.
+     * @return Категория в формате ДТО.
+     */
     @Override
     public CategoryDto getById(Long catId) {
         if (catId == null) {
@@ -56,6 +69,12 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.mapToDto(category);
     }
 
+    /**
+     * Добавление новой категории.
+     *
+     * @param dto Добавляемая категория в формате ДТО
+     * @return Добавленная категория в формате ДТО.
+     */
     @Transactional
     @Override
     public CategoryDto create(NewCategoryDto dto) {
@@ -69,6 +88,13 @@ public class CategoryServiceImpl implements CategoryService {
         return savedCategory;
     }
 
+    /**
+     * Изменение категории.
+     *
+     * @param dto   Категория в формате ДТО
+     * @param catId Идентификатор категории.
+     * @return Обновленная категория в формате ДТО.
+     */
     public CategoryDto update(final CategoryDto dto, final Long catId) {
         final Category category = getCategory(catId);
         if (dto.getName() != null && !dto.getName().equals(category.getName())) {
@@ -82,7 +108,11 @@ public class CategoryServiceImpl implements CategoryService {
         return CategoryMapper.mapToDto(savedCategory);
     }
 
-
+    /**
+     * Удаление категории.
+     *
+     * @param catId Идентификатор категории.
+     */
     @Override
     public void delete(Long catId) {
         Category category = getCategory(catId);

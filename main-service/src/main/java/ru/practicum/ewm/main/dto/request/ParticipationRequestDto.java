@@ -12,10 +12,25 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ParticipationRequestDto {
+    /**
+     * Идентификатор заявки на участие в событии.
+     */
     private Long id;
+    /**
+     * Дата и время создания заявки.
+     */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime created;
+    /**
+     * Идентификатор события.
+     */
     private Long event;
+    /**
+     * Идентификатор пользователя, отправившего заявку.
+     */
     private Long requester;
+    /**
+     * Статус заявки.
+     */
     private Status status;
 }

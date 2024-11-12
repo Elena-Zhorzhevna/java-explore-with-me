@@ -28,7 +28,20 @@ public class PublicEventController {
         this.eventService = eventService;
     }
 
-    // Метод для получения всех событий с возможностью фильтрации
+    /**
+     * Получение всех опубликованных событий с возможностью фильтрации.
+     *
+     * @param text          Текст для поиска в содержимом аннотации и подробном описании события.
+     * @param categories    Список идентификаторов категорий в которых будет вестись поиск.
+     * @param paid          Поиск только платных/бесплатных событий.
+     * @param rangeStart    Дата и время не раньше которых должно произойти событие.
+     * @param rangeEnd      Дата и время не позже которых должно произойти событие.
+     * @param onlyAvailable Только события у которых не исчерпан лимит запросов на участие.
+     * @param sort          Вариант сортировки: по дате события или по количеству просмотров.
+     * @param from          Количество событий, которые нужно пропустить для формирования текущего набора.
+     * @param size          Количество событий в наборе.
+     * @return Список событий в формате ДТО.
+     */
     @GetMapping
     public List<EventShortDto> getAll(
             @RequestParam(required = false) String text,
@@ -48,7 +61,6 @@ public class PublicEventController {
                         "rangeEnd = {}, onlyAvailable = {}, sort = {}, from = {}, size = {}", text, categories, paid,
                 rangeStart, rangeEnd, onlyAvailable, sort, from, size);
 
-        // Создаем объект с параметрами запроса
         RequestPublicParamForEvent param = RequestPublicParamForEvent.builder()
                 .text(text)
                 .categories(categories)
@@ -65,6 +77,12 @@ public class PublicEventController {
         return eventService.getAllPublic(param);
     }
 
+    /**
+     * Получение подробной информации об опубликованном событии по его идентификатору.
+     *
+     * @param id Идентификатор события.
+     * @return Подробная информация о событии.
+     */
     @GetMapping("/{id}")
     public EventFullDto getById(@PathVariable Long id, HttpServletRequest request) {
         log.info("Получен запрос GET /events/{}", id);

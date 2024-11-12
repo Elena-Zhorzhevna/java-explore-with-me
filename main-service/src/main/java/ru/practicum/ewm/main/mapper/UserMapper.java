@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class UserMapper {
+
     public static User mapToUser(NewUserRequest dto) {
         return User.builder()
                 .name(dto.getName())

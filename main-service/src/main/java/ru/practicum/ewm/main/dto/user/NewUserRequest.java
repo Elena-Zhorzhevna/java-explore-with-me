@@ -12,10 +12,16 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class NewUserRequest {
+    /**
+     * Имя пользователя.
+     */
     @NotNull
     @NotBlank
     @Size(min = 2, max = 250)
     private String name;
+    /**
+     * Электронная почта пользователя.
+     */
     @Email
     @NotNull
     @NotBlank

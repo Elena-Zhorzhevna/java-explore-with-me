@@ -10,7 +10,10 @@ import ru.practicum.ewm.main.model.enums.StateUserAction;
 @NoArgsConstructor
 public class UpdateEventUserRequest extends UpdateEventRequest {
 
-    private StateUserAction stateAction;  // Действие пользователя (например, отправить на ревью)
+    /**
+     * Действие пользователя.
+     */
+    private StateUserAction stateAction;
 
     public UpdateEventUserRequest(StateUserAction stateAction) {
         this.stateAction = stateAction;

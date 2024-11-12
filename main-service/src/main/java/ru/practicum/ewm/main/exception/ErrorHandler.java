@@ -10,7 +10,11 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.Instant;
 
-
+/**
+ * Обработчик ошибок.
+ * Класс перехватывает исключения, выбрасываемые в контроллере.
+ * Возвращает соответствующие HTTP-статусы и сообщения об ошибках.
+ */
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {

@@ -11,7 +11,14 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class CategoryDto {
+    /**
+     * Идентификатор категории.
+     */
     private Long id;
+
+    /**
+     * Название категории.
+     */
     @NotBlank
     @Size(min = 1, max = 50)
     private String name;

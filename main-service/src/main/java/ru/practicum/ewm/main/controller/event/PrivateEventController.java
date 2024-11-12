@@ -26,6 +26,14 @@ public class PrivateEventController {
         this.eventService = eventService;
     }
 
+    /**
+     * Получение событий, добавленных текущим пользователем.
+     *
+     * @param userId id текущего пользователя.
+     * @param from   Количество элементов, которые нужно пропустить для формирования текущего набора.
+     * @param size   Количество элементов в наборе.
+     * @return Список событий в формате ДТО.
+     */
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public List<EventShortDto> getAll(@PathVariable Long userId,
@@ -37,6 +45,13 @@ public class PrivateEventController {
         return eventService.getAllPrivate(userId, page, size);
     }
 
+    /**
+     * Получение полной информации о событии, добавленном текущим пользователем.
+     *
+     * @param userId  Идентификатор пользователя.
+     * @param eventId Идентификатор события.
+     * @return Полная информация о событии.
+     */
     @GetMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto get(@PathVariable Long userId,
@@ -45,6 +60,13 @@ public class PrivateEventController {
         return eventService.get(userId, eventId);
     }
 
+    /**
+     * Получение информации о запросах на участие в событии текущего пользователя.
+     *
+     * @param userId  Идентификатор пользователя.
+     * @param eventId Идентификатор события.
+     * @return Список запросов.
+     */
     @GetMapping("/{eventId}/requests")
     @ResponseStatus(value = HttpStatus.OK)
     public List<ParticipationRequestDto> getRequests(@PathVariable Long userId,
@@ -53,6 +75,13 @@ public class PrivateEventController {
         return eventService.getRequests(userId, eventId);
     }
 
+    /**
+     * Добавление нового события.
+     *
+     * @param userId   Идентификатор пользователя.
+     * @param eventDto Добавляемое событие.
+     * @return Добавленное событие в формате ДТО.
+     */
     @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public EventFullDto create(@PathVariable Long userId,
@@ -61,6 +90,14 @@ public class PrivateEventController {
         return eventService.create(userId, eventDto);
     }
 
+    /**
+     * Изменение события, добавленного текущим пользователем.
+     *
+     * @param userId   Идентификатор пользователя.
+     * @param eventId  Идентификатор события.
+     * @param eventDto Данные для изменения информации о событии.
+     * @return Событие с обновленной информацией.
+     */
     @PatchMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto update(@PathVariable Long userId, @PathVariable Long eventId,
@@ -70,6 +107,14 @@ public class PrivateEventController {
         return eventService.update(userId, eventId, eventDto);
     }
 
+    /**
+     * Изменение статуса(подтверждена/отменена) заявок на участие в событии текущего пользователя.
+     *
+     * @param userId  Идентификатор пользователя.
+     * @param eventId Идентификатор события.
+     * @param request Новый статус для заявок на участие в событии текущего пользователя.
+     * @return Заявка на участие с обновленным статусом.
+     */
     @PatchMapping("/{eventId}/requests")
     @ResponseStatus(value = HttpStatus.OK)
     public EventRequestStatusUpdateResult updateRequestStatus(@PathVariable Long userId, @PathVariable Long eventId,

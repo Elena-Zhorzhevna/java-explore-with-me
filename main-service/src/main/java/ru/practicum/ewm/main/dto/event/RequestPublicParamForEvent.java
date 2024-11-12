@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class RequestPublicParamForEvent {
-
     private String text;
     private List<Long> categories;
     private Boolean paid;

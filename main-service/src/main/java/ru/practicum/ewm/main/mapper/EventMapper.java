@@ -14,7 +14,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventMapper {
+
     public static Event mapNewEventDtoToEvent(NewEventDto dto, User user, Category category) {
+
         if (dto == null) {
             throw new IllegalArgumentException("NewEventDto не может быть null");
         }
@@ -40,6 +42,7 @@ public class EventMapper {
     }
 
     public static Event mapUpdateEventAdminRequestToEvent(UpdateEventAdminRequest dto) {
+
         return Event.builder()
                 .annotation(dto.getAnnotation())
                 .createdOn(LocalDateTime.now())
@@ -55,6 +58,7 @@ public class EventMapper {
     }
 
     public static Event mapUpdateEventUserRequestToEvent(UpdateEventUserRequest dto) {
+
         return Event.builder()
                 .annotation(dto.getAnnotation())
                 .description(dto.getDescription())
@@ -68,6 +72,7 @@ public class EventMapper {
     }
 
     public static EventFullDto mapEventToEventFullDto(Event event) {
+
         return EventFullDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -89,6 +94,7 @@ public class EventMapper {
     }
 
     public static EventShortDto mapToEventShortDto(Event event) {
+
         return EventShortDto.builder()
                 .id(event.getId())
                 .annotation(event.getAnnotation())
@@ -103,9 +109,11 @@ public class EventMapper {
     }
 
     public static List<EventShortDto> toEventShortDtoList(List<Event> events) {
+
         if (events == null) {
             return Collections.emptyList();
         }
+
         return events.stream().map(EventMapper::mapToEventShortDto).collect(Collectors.toList());
     }
 }

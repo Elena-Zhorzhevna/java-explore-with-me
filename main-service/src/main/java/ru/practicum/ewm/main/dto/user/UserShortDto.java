@@ -10,10 +10,15 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class UserShortDto {
+    /**
+     * Идентификатор пользователя.
+     */
     @NotNull
     @NotBlank
     private Long id;
-
+    /**
+     * Имя пользователя.
+     */
     @NotNull
     @NotBlank
     private String name;

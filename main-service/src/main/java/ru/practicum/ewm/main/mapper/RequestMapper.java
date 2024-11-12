@@ -13,7 +13,9 @@ import java.util.stream.Collectors;
 public class RequestMapper {
 
     public static ParticipationRequest mapToRequest(Event event, User requester) {
-        Status status = event.getParticipantLimit() == 0 || !event.getRequestModeration() ? Status.CONFIRMED : Status.PENDING;
+
+        Status status = event.getParticipantLimit() == 0 ||
+                !event.getRequestModeration() ? Status.CONFIRMED : Status.PENDING;
 
         return ParticipationRequest.builder()
                 .requester(requester)

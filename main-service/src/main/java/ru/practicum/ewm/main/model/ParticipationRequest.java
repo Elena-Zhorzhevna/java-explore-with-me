@@ -17,17 +17,37 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "requests")
 public class ParticipationRequest {
+
+    /**
+     * Идентификатор на участие в событии.
+     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    /**
+     * Событие.
+     */
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     private Event event;
+
+    /**
+     * Пользователь, отправивший заявку.
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", nullable = false)
     private User requester;
+
+    /**
+     * Время и дата создания заявки.
+     */
     @Column
     private LocalDateTime created;
+
+    /**
+     * Статус заявки.
+     */
     @Column
     @Enumerated(EnumType.STRING)
     private Status status;

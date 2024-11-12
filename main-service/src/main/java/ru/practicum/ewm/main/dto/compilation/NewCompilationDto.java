@@ -20,10 +20,13 @@ public class NewCompilationDto {
     @NotBlank
     @Size(min = 1, max = 50)
     private String title;
+
     /**
      * Закреплена ли подборка на главной странице сайта.
      */
+    @Builder.Default
     private boolean pinned = false;
+
     /**
      * Список идентификаторов событий входящих в подборку.
      */

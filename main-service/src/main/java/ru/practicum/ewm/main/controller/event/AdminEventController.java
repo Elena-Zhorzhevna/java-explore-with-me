@@ -29,7 +29,18 @@ public class AdminEventController {
         this.eventService = eventService;
     }
 
-
+    /**
+     * Поиск событий.
+     *
+     * @param users      Список id пользователей, чьи события нужно найти.
+     * @param states     Список состояний в которых находятся искомые события.
+     * @param categories Список id категорий в которых будет вестись поиск.
+     * @param rangeStart Дата и время не раньше которых должно произойти событие.
+     * @param rangeEnd   Дата и время не позже которых должно произойти событие.
+     * @param from       Количество событий, которые нужно пропустить для формирования текущего набора.
+     * @param size       Количество событий в наборе.
+     * @return Список событий в формате ДТО.
+     */
     @GetMapping
     @ResponseStatus(value = HttpStatus.OK)
     public List<EventFullDto> getAll(@RequestParam(required = false) List<Long> users,
@@ -61,6 +72,13 @@ public class AdminEventController {
         return eventService.getAll(param);
     }
 
+    /**
+     * Редактирование данных любого события и его статуса(отклонение/публикация) администратором.
+     *
+     * @param eventId     Идентификатор пользователя.
+     * @param updateEvent Данные для изменения информации о событии.
+     * @return Событие с обновленными данными в формате ДТО.
+     */
     @PatchMapping("/{eventId}")
     @ResponseStatus(value = HttpStatus.OK)
     public EventFullDto update(@PathVariable Long eventId,
