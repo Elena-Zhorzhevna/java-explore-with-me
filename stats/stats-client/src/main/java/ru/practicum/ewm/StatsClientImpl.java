@@ -77,7 +77,7 @@ public class StatsClientImpl implements StatsClient {
             return List.of();
         } catch (Exception e) {
             log.error("Неизвестная ошибка при получении статистики", e);
-            return List.of(); // В случае ошибки возвращаем пустой список
+            return List.of();
         }
     }
 
