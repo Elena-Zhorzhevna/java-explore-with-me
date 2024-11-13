@@ -2,6 +2,7 @@ package ewm.stats.service;
 
 import ewm.ParamHitDto;
 import ewm.StatDto;
+import ewm.stats.exception.InvalidTimeRangeException;
 import ewm.stats.mapper.ParamHitMapper;
 import ewm.stats.repository.StatsRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -45,18 +46,26 @@ public class StatsServiceImpl implements StatsService {
     /**
      * Получение статистики по посещениям.
      *
-     * @param start  Дата и время начала диапазона за который нужно выгрузить статистику.
-     * @param end    Дата и время конца диапазона за который нужно выгрузить статистику.
+     * @param start  Дата и время начала диапазона, за который нужно выгрузить статистику.
+     * @param end    Дата и время конца диапазона, за который нужно выгрузить статистику.
      * @param uris   Список uri для которых нужно выгрузить статистику.
      * @param unique Список uri для которых нужно выгрузить статистику.
      */
     @Override
     public List<StatDto> getStats(String start, String end, List<String> uris, boolean unique) {
-        Objects.requireNonNull(start, "Время начала сбора данных статистики должно быть указано.");
-        Objects.requireNonNull(end, "Время окончания сбора данных статистики должно быть указано.");
+
+        if (start == null || start.isEmpty()) {
+            throw new InvalidTimeRangeException("Параметр start обязателен.");
+        }
+
+        if (end == null || end.isEmpty()) {
+            throw new InvalidTimeRangeException("Параметр end обязателен.");
+        }
 
         final LocalDateTime startTime = decodeTime(start);
         final LocalDateTime endTime = decodeTime(end);
+
+        checkTime(startTime, endTime);
 
         if (uris == null || uris.isEmpty()) {
             if (unique) {
@@ -64,7 +73,6 @@ public class StatsServiceImpl implements StatsService {
 
             } else {
                 return repository.getHits(startTime, endTime);
-
             }
 
         } else {
@@ -82,5 +90,14 @@ public class StatsServiceImpl implements StatsService {
      */
     private LocalDateTime decodeTime(String time) {
         return LocalDateTime.parse(URLDecoder.decode(time, StandardCharsets.UTF_8), DATE_TIME_FORMATTER);
+    }
+
+    /**
+     * Метод для проверки, что время начала раньше времени окончания.
+     */
+    private void checkTime(LocalDateTime startTime, LocalDateTime endTime) {
+        if (startTime.isAfter(endTime)) {
+            throw new InvalidTimeRangeException("Время начала не может быть позже времени окончания.");
+        }
     }
 }

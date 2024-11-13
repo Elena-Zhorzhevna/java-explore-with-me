@@ -34,13 +34,22 @@ public class StatsClientImpl implements StatsClient {
     @Override
     public void hit(ParamHitDto paramHitDto) {
         log.debug("Отправка POST-запроса на сервер статистики с hit = {}", paramHitDto);
-        restClient.post()
-                .uri("/hit")
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(paramHitDto)
-                .retrieve()
-                .toBodilessEntity();
+        try {
+            restClient.post()
+                    .uri("/hit")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(paramHitDto)
+                    .retrieve()
+                    .toBodilessEntity();
+
+            log.info("Hit отправлен успешно");
+        } catch (RestClientException e) {
+            log.warn("Ошибка при отправке hit на сервер статистики. Код ошибки: {}, Сообщение: {}",
+                    e.getClass().getSimpleName(), e.getMessage());
+        } catch (Exception e) {
+            log.error("Неизвестная ошибка при отправке hit на сервер статистики", e);
+        }
     }
 
     /**
@@ -48,6 +57,7 @@ public class StatsClientImpl implements StatsClient {
      */
     @Override
     public List<StatDto> getStats(String start, String end, List<String> uris, boolean unique) {
+
         log.debug("Отправка GET-запроса на сервер статистики для uris = {}", uris);
         try {
             return restClient.get()
@@ -63,7 +73,10 @@ public class StatsClientImpl implements StatsClient {
                     .body(new ParameterizedTypeReference<>() {
                     });
         } catch (RestClientException e) {
-            log.warn("Ошибка получение ответа от сервера статистики, причины: {}", e.getMessage());
+            log.warn("Ошибка при получении статистики с сервера статистики, причины : {}", e.getMessage());
+            return List.of();
+        } catch (Exception e) {
+            log.error("Неизвестная ошибка при получении статистики", e);
             return List.of();
         }
     }

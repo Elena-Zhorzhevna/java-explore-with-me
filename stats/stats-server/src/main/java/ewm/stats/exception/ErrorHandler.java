@@ -16,6 +16,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ErrorHandler {
 
+    @ExceptionHandler(InvalidTimeRangeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)  // Код ответа 400
+    public ErrorResponse handleInvalidTimeRangeException(InvalidTimeRangeException exception) {
+        log.warn("Неверный диапазон времени: {}", exception.getMessage());
+        return new ErrorResponse("Ошибка.", exception.getMessage());
+    }
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse missingHeaderException(final MissingRequestHeaderException exception) {
