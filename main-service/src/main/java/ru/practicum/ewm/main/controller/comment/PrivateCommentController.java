@@ -32,13 +32,15 @@ public class PrivateCommentController {
      * @param newCommentDto Данные для обновления комментария.
      * @return Обновленный комментарий в формате ДТО.
      */
-    @PostMapping()
+
+    @PostMapping
     @ResponseStatus(value = HttpStatus.CREATED)
     public CommentDto save(@PathVariable Long userId,
                            @RequestParam @Positive Long eventId,
                            @RequestBody @Valid NewCommentDto newCommentDto) {
-        log.info("Получен POST-запрос /users/{}/comments/{} с новым комментарием: {}", userId, eventId,
+        log.info("Получен POST-запрос /users/{}/comments с событием {} и новым комментарием: {}", userId, eventId,
                 newCommentDto.getCommentText());
+
         return commentService.create(userId, eventId, newCommentDto);
     }
 

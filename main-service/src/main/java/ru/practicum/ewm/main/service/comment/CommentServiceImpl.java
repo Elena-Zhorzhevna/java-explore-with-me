@@ -192,7 +192,6 @@ public class CommentServiceImpl implements CommentService {
         if (!comment.getOwner().getId().equals(userId)) {
             throw new ConflictException("У вас нет прав на удаление этого комментария.");
         }
-
         commentRepository.deleteById(commentId);
     }
 

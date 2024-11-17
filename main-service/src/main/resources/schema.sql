@@ -89,7 +89,7 @@ CREATE TABLE If NOT EXISTS comments
     created        TIMESTAMP WITHOUT TIME ZONE             NOT NULL,
     status         VARCHAR(30)                             NOT NULL,
     CONSTRAINT pk_comments PRIMARY KEY (id),
+    CONSTRAINT check_comment_text_length CHECK (length(comment_text) >= 3 AND length(comment_text) <= 2000),
     FOREIGN KEY (event_id) REFERENCES events (id) ON DELETE CASCADE,
-    FOREIGN KEY (owner_id) REFERENCES users (user_id) ON DELETE CASCADE,
-    CONSTRAINT check_comment_text_length CHECK (length(comment_text) >= 3 AND length(comment_text) <= 2000)
+    FOREIGN KEY (owner_id) REFERENCES users (user_id) ON DELETE CASCADE
 );
