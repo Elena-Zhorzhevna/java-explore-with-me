@@ -60,6 +60,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public void delete(Long compId) {
+
         if (compilationRepository.existsById(compId)) {
             log.info("Удалена подборка событий с id = {}", compId);
             compilationRepository.deleteById(compId);
@@ -97,7 +98,7 @@ public class CompilationServiceImpl implements CompilationService {
             throw new ConflictException(e.getMessage(), e);
         }
 
-        log.info("Update category: {}", compilationToUpdate.getTitle());
+        log.info("Обновлена подборка: {}", compilationToUpdate.getTitle());
         return CompilationMapper.mapToDto(compilationToUpdate);
     }
 
